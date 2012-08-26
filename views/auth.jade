@@ -1,0 +1,20 @@
+
+a.btn.dropdown-toggle(data-toggle='dropdown', href='#')
+	i.icon-user
+	if user
+		|#{user.name}
+	else
+		|Guest
+	span.caret
+ul.dropdown-menu
+	if user
+		li
+			a(href='/users/#{user.name}') Profile
+		li.divider
+		li
+			a(href='/logout') Logout
+	else
+		li
+			a(data-toggle='modal', href='#loginModal' ) Login
+		li
+			a(data-toggle='modal', href='#registrationModal' ) Registration

@@ -1,0 +1,29 @@
+doctype 5
+html
+  head
+    title= title
+    //CSS 
+    link(rel='stylesheet', href='/stylesheets/bootstrap.css')
+    
+    //link(rel='stylesheet', href='/stylesheets/bootstrap-modal-fix.css')
+    
+    //Shortcut icon
+    link(rel='shortcut icon', href='/images/ico.png')
+    
+  body
+    block navbar
+      include navbar
+    .container
+      block content
+      block footer
+        hr
+        footer
+          p &copy; mr0re1 2012
+          
+    //JavaScript
+    script(src='/javascripts/jquery.js')
+    script(src='/javascripts/bootstrap.js')
+    
+    script(src='/javascripts/auth.js')
+    
+    

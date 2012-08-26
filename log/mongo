@@ -1,0 +1,46 @@
+Fri Aug  3 11:55:48 
+Fri Aug  3 11:55:48 warning: 32-bit servers don't have journaling enabled by default. Please use --journal if you want durability.
+Fri Aug  3 11:55:48 
+Fri Aug  3 11:55:48 isInRangeTest passed
+Fri Aug  3 11:55:48 shardKeyTest passed
+Fri Aug  3 11:55:48 shardObjTest passed
+Fri Aug  3 11:55:48 BackgroundJob starting: DataFileSync
+Fri Aug  3 11:55:48 versionCmpTest passed
+Fri Aug  3 11:55:48 versionArrayTest passed
+Fri Aug  3 11:55:48 [initandlisten] MongoDB starting : pid=4387 port=27017 dbpath=/home/mr0re1/Projects/corp/data 32-bit host=mr0re1-desktop
+Fri Aug  3 11:55:48 [initandlisten] 
+Fri Aug  3 11:55:48 [initandlisten] ** NOTE: when using MongoDB 32 bit, you are limited to about 2 gigabytes of data
+Fri Aug  3 11:55:48 [initandlisten] **       see http://blog.mongodb.org/post/137788967/32-bit-limitations
+Fri Aug  3 11:55:48 [initandlisten] **       with --journal, the limit is lower
+Fri Aug  3 11:55:48 [initandlisten] 
+Fri Aug  3 11:55:48 [initandlisten] db version v2.0.3, pdfile version 4.5
+Fri Aug  3 11:55:48 [initandlisten] git version: 05bb8aa793660af8fce7e36b510ad48c27439697
+Fri Aug  3 11:55:48 [initandlisten] build info: Linux domU-12-31-39-01-70-B4 2.6.21.7-2.fc8xen #1 SMP Fri Feb 15 12:39:36 EST 2008 i686 BOOST_LIB_VERSION=1_41
+Fri Aug  3 11:55:48 [initandlisten] options: { bind_ip: "127.0.0.1", config: "mongod.conf", dbpath: "/home/mr0re1/Projects/corp/data", logappend: "true", logpath: "/home/mr0re1/Projects/corp/log/mongo", noauth: "true", port: 27017, verbose: "true" }
+Fri Aug  3 11:55:48 [initandlisten] flushing directory /home/mr0re1/Projects/corp/data
+Fri Aug  3 11:55:48 [initandlisten] Accessing: local for the first time
+Fri Aug  3 11:55:48 [initandlisten] query local.system.namespaces reslen:20 0ms
+Fri Aug  3 11:55:49 [initandlisten] enter repairDatabases (to check pdfile version #)
+Fri Aug  3 11:55:49 [initandlisten] done repairDatabases
+Fri Aug  3 11:55:49 [initandlisten] fd limit hard:4096 soft:1024 max conn: 819
+Fri Aug  3 11:55:49 [websvr] fd limit hard:4096 soft:1024 max conn: 819
+Fri Aug  3 11:55:49 [initandlisten] waiting for connections on port 27017
+Fri Aug  3 11:55:49 [websvr] admin web console waiting for connections on port 28017
+Fri Aug  3 11:55:49 BackgroundJob starting: ClientCursorMonitor
+Fri Aug  3 11:55:49 BackgroundJob starting: PeriodicTask::Runner
+Fri Aug  3 11:55:49 BackgroundJob starting: snapshot
+Fri Aug  3 11:55:57 got kill or ctrl c or hup signal 2 (Interrupt), will terminate after current cmd ends
+Fri Aug  3 11:55:57 [interruptThread] now exiting
+Fri Aug  3 11:55:57 dbexit: 
+Fri Aug  3 11:55:57 [interruptThread] shutdown: going to close listening sockets...
+Fri Aug  3 11:55:57 [interruptThread] closing listening socket: 5
+Fri Aug  3 11:55:57 [interruptThread] closing listening socket: 6
+Fri Aug  3 11:55:57 [interruptThread] closing listening socket: 7
+Fri Aug  3 11:55:57 [interruptThread] removing socket file: /tmp/mongodb-27017.sock
+Fri Aug  3 11:55:57 [interruptThread] shutdown: going to flush diaglog...
+Fri Aug  3 11:55:57 [interruptThread] shutdown: going to close sockets...
+Fri Aug  3 11:55:57 [interruptThread] shutdown: waiting for fs preallocator...
+Fri Aug  3 11:55:57 [interruptThread] shutdown: closing all files...
+Fri Aug  3 11:55:57 [interruptThread] closeAllFiles() finished
+Fri Aug  3 11:55:57 [interruptThread] shutdown: removing fs lock...
+Fri Aug  3 11:55:57 dbexit: really exiting now

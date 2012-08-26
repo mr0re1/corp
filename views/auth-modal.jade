@@ -1,0 +1,14 @@
+#loginModal.modal.hide.fade.in
+	.modal-header
+		button.close(type='button', data-dismiss='modal') ×
+		h3 Login
+	.modal-body
+		form#loginForm.well(method='post', action='/login')
+			.field
+				label User name:
+				input(name='name', type='text')
+			.field
+				label Passwoord:
+				input(name='password', type='password')
+	.modal-footer
+		#loginFormSubmit.btn.btn-primary(href='#') Login
