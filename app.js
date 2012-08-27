@@ -12,8 +12,8 @@ var UserProvider = require('./providers/user').UserProvider
 var Auth = require('./auth').Auth
   , auth = new Auth({ provider: userProvider });
 
-var DocumentController = require('./documentController')
-  , docuemntController = new DocumentController('localhost', 27017, function(err, provider){});
+var DocumentController = require('./documentController').DocumentController
+  , dc = new DocumentController('localhost', 27017, function(err, provider){});
 
 var app = express();
 
@@ -44,8 +44,29 @@ app.get('/', routes.index);
 app.post('/login', function(req, res, next){ auth.login(req, res, next); }, function(req, res) { res.redirect('back'); } );
 app.all('/logout', function(req, res, next){ auth.logout(req, res, next); },  function(req, res) { res.redirect('back'); } );
 
-app.get('/doc/load')
-app.post('/doc/load', function(req, res, next){ documentController.load(req, res, next) } );
+
+app.get('/docs'
+  , function(req, res, next){
+      dc.getDocs({}, function(err, docs) {
+        if (err) return next(err);
+        res.docs = docs;
+        next(); 
+      });
+    }
+  , routes.docs);
+
+app.get('/doc/:id'
+  , function(req, res, next) {
+    dc.getDoc(req.params.id, function(err, doc){
+      if (err) return next(err);
+      res.doc = doc;
+      next();
+    });
+  }
+  , routes.doc);
+
+//app.get('/doc/load')
+//app.post('/doc/load', function(req, res, next){ documentController.load(req, res, next) } );
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));

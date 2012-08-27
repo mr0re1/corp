@@ -1,0 +1,14 @@
+extends layout
+
+block content
+	h1= title
+	each topic in doc._content
+		.topic
+			each genre in topic._content
+				.genre
+					each lex in genre._content
+						-if (typeof lex == 'string')
+							|#{lex}
+						-else
+							span.lex
+								|#{lex.name}

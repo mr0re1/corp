@@ -1,0 +1,10 @@
+extends layout
+
+block content
+	h1= title
+	ul
+	each doc in docs
+		li
+			a(href='/doc/#{doc._id}')
+				|#{doc._name}
+		

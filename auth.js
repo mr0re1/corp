@@ -72,11 +72,7 @@ Auth.prototype.logout = function(req, res, next) {
 
 Auth.prototype.middleware = function(req, res, next) {
     var user = req.session.user;
-    if (user) {
-        console.log(user.name + ' is comming');
-    } else {
-        console.log('Not authored user');
-    }
+    
     next();
 };
 
