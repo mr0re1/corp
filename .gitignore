@@ -1,3 +1,6 @@
 tmp
 node_modules
 uploads
+data/audio/*
+data/photo/*
+data/mongo/*
