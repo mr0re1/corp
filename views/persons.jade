@@ -1,0 +1,18 @@
+extends layout
+
+block content
+	.span3
+		ul.nav.nav-pills.nav-stacked
+			li.nav-header -
+			li
+				a(href='/person-add') Добавить респондента
+			li
+				a(href='/person-search') Найти респондента
+	.span9
+		h3 Новые респонденты
+		ul
+		each person in persons
+			li
+				a(href='/person/#{person._id}')
+					|#{person.name}
+		

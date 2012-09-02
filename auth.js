@@ -71,27 +71,26 @@ Auth.prototype.logout = function(req, res, next) {
 }
 
 Auth.prototype.middleware = function(req, res, next) {
-    var user = req.session.user;
-    
+    if(req.session.user) req.user = req.session.user.name;
     next();
 };
 
-//Auth.prototype._prepareCollection = function(users) {
-//    var _this = this;
-//    for (var dummy in users) {
-//        (function(user){
-//            var pass = user.pass;
-//            delete user.pass;
-//            calcHash(pass, function(err, hash, salt) {
-//                if (err) return fn(err);
-//                user.hash = hash;
-//                user.salt = salt;
-//                _this.provider.userAdd(user, function(err, user) {
-//                    if (err) console.log(err);
-//                })
-//            });
-//        })(users[dummy]);
-//    }
-//}
+Auth.prototype._addUser = function(users) {
+    var _this = this;
+    for (var dummy in users) {
+        (function(user){
+            var pass = user.pass;
+            delete user.pass;
+            calcHash(pass, function(err, hash, salt) {
+                if (err) return fn(err);
+                user.hash = hash;
+                user.salt = salt;
+                _this.provider.userAdd(user, function(err, user) {
+                    if (err) console.log(err);
+                })
+            });
+        })(users[dummy]);
+    }
+}
 
 exports.Auth = Auth;

@@ -1,0 +1,19 @@
+extends layout
+
+block content
+	form(method='post', enctype='multipart/form-data', acton='/doc-add')
+		legend Добавление нового документа в коллекцию
+		label Название
+		input.span12(name='name', type='text', value=form.name)
+		
+		label Размеченый текст
+		textarea.span12(name='razm', rows=17)= form.razm
+		-if (form.error)
+			-if (typeof form.error != 'array') form.error = [ form.error ]
+			each err in form.error
+				.alert.alert-error
+					|#{err}
+		label Звукозапись
+		input(type='file', name='audio')
+		
+		button.btn(type='submit') Submit

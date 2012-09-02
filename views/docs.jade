@@ -1,10 +1,17 @@
 extends layout
 
 block content
-	h1= title
-	ul
-	each doc in docs
-		li
-			a(href='/doc/#{doc._id}')
-				|#{doc._name}
+	.span3
+		ul.nav.nav-tabs.nav-stacked
+			li
+				a(href='/doc-add') Добавить документ
+	.span9
+		h3 Новые документы
+		ul
+		each doc in docs
+			li
+				a(href='/doc/#{doc._id}')= doc.name
+				|&nbsp;(Добавил&nbsp;
+				a(href='/user/#{doc.author}')= doc.author
+				|&nbsp;	#{dateFormat(doc.created_at)})
 		

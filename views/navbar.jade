@@ -1,17 +1,13 @@
 .navbar.navbar-fixed-top
     .navbar-inner
-        .container-fluid
-            a.brand(href='/') Corpus
+        .container
+            a.brand(href='/') Корпус
             .pull-right.btn-group
                 include auth
-            .nav-collapse
+            .nav-collapse.collapse
                 ul.nav
                     li
-                        a(href='/') Home
+                        a(href='/docs') Документы
                     li
-                        a(href='/about') About
-                    li
-                        a(href='/docs') Docs
-                    li
-                        a(href='/search') Search
+                        a(href='/person') Респонденты
 include auth-modal

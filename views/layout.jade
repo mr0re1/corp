@@ -3,27 +3,32 @@ html
   head
     title= title
     //CSS 
-    link(rel='stylesheet', href='/stylesheets/bootstrap.css')
-    
-    //link(rel='stylesheet', href='/stylesheets/bootstrap-modal-fix.css')
+    link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
+    link(rel='stylesheet', href='/stylesheets/bootstrap-responsive.css')
+    link(rel='stylesheet', href='/stylesheets/docview.css')
     
     //Shortcut icon
     link(rel='shortcut icon', href='/images/ico.png')
+    
+    //JavaScript
+    script(src='/javascripts/jquery.js')
+    script(src='/javascripts/jquery.tmpl.min.js')
+    script(src='/javascripts/bootstrap.js')
+    
+    style
+      body {
+        position: relative;
+        padding-top: 40px;
+      }
     
   body
     block navbar
       include navbar
     .container
-      block content
-      block footer
-        hr
-        footer
-          p &copy; mr0re1 2012
-          
-    //JavaScript
-    script(src='/javascripts/jquery.js')
-    script(src='/javascripts/bootstrap.js')
-    
+      .row
+        block content
+    block footer
+      hr  
     script(src='/javascripts/auth.js')
     
     

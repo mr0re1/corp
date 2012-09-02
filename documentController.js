@@ -1,61 +1,68 @@
-var Db = require('mongodb').Db;
-var Connection = require('mongodb').Connection;
-var Server = require('mongodb').Server;
-var BSON = require('mongodb').BSON;
-var ObjectID = require('mongodb').ObjectID;
+var async = require('async')
+	, path = require('path')
+	, fs = require('fs')
+	, parser = require('./utils/parser/parser');
 
+var getLexemes = function(item) {
+	if (item._type == 'lex') return [item];
+	if (! item._content )	 return [];
+	var res = [];
+	for (var ind in item._content) {
+		var r = getLexemes(item._content[ind]);
+		for (var ri in r) res.push(r[ri]);
+	}
+	return res;
+}
 
-DocumentController = function(host, port, fn) {
-	this.db = new Db('corp', new Server(host, port, {auto_reconnect: true}, {}));
-	this.collectionName = 'docs';
-	var _this = this;
-  this.db.open( function(err, dummy) {
-		if (err) fn(err);// TODO : 'throw err' or 'return fn(err)' ?
-		else fn(null, this);
-	});
-};
-
-DocumentController.prototype.getCollection = function(fn) {
-	this.db.collection(this.collectionName, fn);
-};
-
-DocumentController.prototype.getDocs = function(opt, fn) {
-	this.getCollection(function(err, collection){
-		if (err) return fn(err);
-		collection.find(opt, {_content:false}).toArray(function(err, docs){
+var moveFile = function(from, to, fn) {
+	fs.rename(tmp_path, target_path, function(err) {
+		if (err) fn(err);
+		fs.unlink(tmp_path, function() {
 			if (err) fn(err);
-			else fn(null, docs);
+			else fn(null, target_path);
 		});
 	});
+}
+
+DocumentController = function(cp, fn) {
+	this.cp = cp;
+}
+
+DocumentController.prototype.getDocs = function(opt, fn) {
+	this.cp.find(opt, {_content: false}, fn);
 };
 
 DocumentController.prototype.getDoc = function(id, fn) {
-	this.getCollection(function(err, collection){
-		if (err) return fn(err);
-		collection.findOne({_id: collection.db.bson_serializer.ObjectID.createFromHexString(id) }, function(err, doc){
-			if (err) fn(err);
-			else fn(null, doc);
-		});
-	});
+	this.cp.getById(id, fn);
 };
 
-//DocumentController.prototype.userAdd = function(user, fn) {
-//	if (user.name === undefined) { fn(new Error('Need name')); return }
-//	var _this = this;
-//	this.userGet(user.name, function(err, otherUser){
-//		
-//		if (err) { fn(err); return }
-//		if (otherUser !== null) { fn(new Error("User with this name is already exist")); return; }
-//		
-//		_this.getCollection(function(err, collection){
-//			if (err) { fn(err); return }
-//			user.created_at = new Date();
-//			collection.insert(user, fn);
-//		});
-//		
-//	});
-//	
-//	
-//};
+
+DocumentController.prototype.addDocument = function(form, fn) {
+	var _this = this;
+	async.series({
+		doc: parser.processString.bind(null, form.razm),
+		audio: function(fn) {
+			if (! form.files.audio || ! form.files.audio.size ) return fn(null, null);
+			var file_name = path.basename(form.files.audio.path);
+			var target_path = './data/audio/' + file_name;
+			fs.rename(form.files.audio.path, target_path, function(err){
+				if (err) fn(err);
+				else fn(err, file_name);
+			});
+		}
+	},
+	function(err, r) {
+		if (err) return fn(err);
+		r.doc.name = form.name;
+		r.doc.created_at = new Date();
+		r.doc.author = form.user;
+		if (r.audio) r.doc.audio = r.audio;
+		_this.cp.insert(r.doc, function(err, inserted){
+			if (err) return fn(err);
+			var doc_id = inserted[0]._id;
+			fn(null, doc_id);
+		});
+	});
+}
 
 exports.DocumentController = DocumentController;

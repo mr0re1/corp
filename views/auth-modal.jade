@@ -1,14 +1,16 @@
 #loginModal.modal.hide.fade.in
 	.modal-header
 		button.close(type='button', data-dismiss='modal') ×
-		h3 Login
+		h4 Вход
 	.modal-body
-		form#loginForm.well(method='post', action='/login')
-			.field
-				label User name:
-				input(name='name', type='text')
-			.field
-				label Passwoord:
-				input(name='password', type='password')
+		form#loginForm.form-horizontal(method='post', action='/login')
+			.control-group
+				label.control-label Пользователь:
+				.controls				
+					input(name='name', type='text')
+			.control-group
+				label.control-label Пароль:
+				.controls
+					input(name='password', type='password')
 	.modal-footer
-		#loginFormSubmit.btn.btn-primary(href='#') Login
+		#loginFormSubmit.btn.btn-primary(href='#') Войти

@@ -1,0 +1,49 @@
+.docview {
+	font-size: 16px;
+	line-height: 20px;
+}
+
+.lex {
+	/*background-color: #ddf;*/
+	cursor: pointer;
+}
+.lex.selected {
+	background-color: #f00;
+}
+
+
+.ques {
+	padding-left: 20px;
+	margin: 20px 0 10px 0;
+	/*background-color: #fdd;*/
+	display: block;
+	font-style: italic;
+
+}
+
+.descr {
+	display: none;
+	position: absolute;
+}
+
+.span2  {
+	min-height: 1px;
+}
+
+.audio-fake { height: 30px; }
+.audio-bar {
+	position: fixed;
+	bottom: 0;
+	background-color: #fff;
+}
+.audio-bar audio {
+	width: inherit;
+}
+
+
+
+
+
+/*textarea[name='razm'] {
+	width: 100%;
+}*/
