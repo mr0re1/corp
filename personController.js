@@ -51,7 +51,7 @@ PersonController.prototype.addPerson = function(form, fn) {
 			r.person.created_at = new Date();
 			r.person.added_by = form.user;
 			if (r.photo) r.person.photo = r.photo;
-			_this.cp.insert(r.doc, function(err, inserted){
+			_this.cp.insert(r.person, function(err, inserted){
 				if(err) fn(err);
 				else fn(null, inserted[0]._id);
 			});
