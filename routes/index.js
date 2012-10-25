@@ -1,8 +1,12 @@
+module.exports = function(app) {
+
+  require('./main')(app);
+  
+
+}
+
 
 /*
- * GET home page.
- */
-
 var dateFormat = function(date) {
   if (! date) return "";
   return date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear();
@@ -96,4 +100,4 @@ exports.personadd = function(req, res){
     }
   )
 };
-
+*/

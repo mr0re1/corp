@@ -1,5 +1,5 @@
 var express = require('express')
-  , routes = require('./routes')
+  //, routes = require('./routes')(app)
   , path = require('path')
   , mime = require('mime')
   , fs = require('fs')
@@ -55,6 +55,8 @@ app.configure(function(){
 
   app.use(app.router);
   
+  require('./routes')(app);
+
 });
 
 app.configure('development', function(){
@@ -62,10 +64,10 @@ app.configure('development', function(){
 });
 
 
-app.get('/', routes.index);
+
+/*
 app.post('/login', function(req, res, next){ app.auth.login(req, res, next); }, function(req, res) { res.redirect('back'); } );
 app.all('/logout', function(req, res, next){ app.auth.logout(req, res, next); },  function(req, res) { res.redirect('back'); } );
-
 
 app.get('/docs'
   , function(req, res, next){
@@ -167,7 +169,7 @@ var uploadFile = function(to, req, res, next) {
 
 app.get('/audio/:id', uploadFile.bind(null, __dirname + '/data/audio/'));
 app.get('/photo/:id', uploadFile.bind(null, __dirname + '/data/photo/'));
-
+*/
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });
