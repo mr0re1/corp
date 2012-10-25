@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  form(method='post', enctype='multipart/form-data', action='/search')
+    .span3
+      label Слово
+      input(name='name', type='text', value=form.name)
+    .span3
+      label Начальная форма
+      input(name='first', type='text', value=form.first)
+    .span3
+      label Литературное
+      input(name='lit', type='text', value=form.lit)
+    .span3
+      label Морфологические признаки
+      input(name='descr', type='text', value=form.descr)
+    button.btn(type='submit') Поиск 
+
