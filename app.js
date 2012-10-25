@@ -26,8 +26,8 @@ var LexemeController = require('./lexemeController').LexemeController
   , lc = new LexemeController(lcp);
 
 var DocumentController = require('./documentController').DocumentController
-  , dcp = new CollectionProvider('localhost', 27017, 'corp', 'docs', dbocb('docs'))
-  , dc = new DocumentController(dcp, lc);
+  , dcp = new CollectionProvider('localhost', 27017, 'corp', 'docs', dbocb('docs'));
+
 
 
 var PersonController = require('./personController').PersonController
@@ -54,7 +54,6 @@ app.configure(function(){
   require('./permissions')(app);
 
   app.use(app.router);
-  
   require('./routes')(app);
 
 });
@@ -63,52 +62,10 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
+app.document_controller = new DocumentController(dcp, lc);
 
 
 /*
-app.post('/login', function(req, res, next){ app.auth.login(req, res, next); }, function(req, res) { res.redirect('back'); } );
-app.all('/logout', function(req, res, next){ app.auth.logout(req, res, next); },  function(req, res) { res.redirect('back'); } );
-
-app.get('/docs'
-  , function(req, res, next){
-      dc.getDocs({}, function(err, docs) {
-        if (err) return next(err);
-        res.docs = docs;
-        next(); 
-      });
-    }
-  , routes.docs);
-
-app.get('/doc/:id'
-  , function(req, res, next) {
-      dc.getDoc(req.params.id, function(err, doc){
-        if (err) return next(err);
-        res.doc = doc;
-        next();
-      });
-    }
-  , routes.doc);
-
-app.get('/doc-add', routes.docadd);
-
-app.post('/doc-add'
-  , function(req, res, next) {
-      var form = req.body;
-      form.user = req.user;
-      form.files = req.files;
-
-      dc.addDocument(
-        form
-      , function(err, id){
-          if (err) {
-            form.error = err;
-            req.docaddform = form;
-            next();
-          }
-          else res.redirect('/doc/' + id);
-        });
-    }
-  , routes.docadd);
 
 app.get('/search', routes.search);
 

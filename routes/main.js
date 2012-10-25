@@ -3,8 +3,7 @@ module.exports = function(app) {
     res.render(
       'index',
       { user: req.user
-      , title: 'Hello'
-      }
+      , title: 'Hello' }
     )
   });
 }

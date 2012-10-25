@@ -71,7 +71,9 @@ Auth.prototype.logout = function(req, res, next) {
 }
 
 Auth.prototype.middleware = function(req, res, next) {
-    if(req.session.user) req.user = req.session.user.name;
+    if(req.session.user) {
+      req.user = req.session.user.name;
+    }
     next();
 };
 
