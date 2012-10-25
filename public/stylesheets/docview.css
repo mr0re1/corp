@@ -18,7 +18,17 @@
 	/*background-color: #fdd;*/
 	display: block;
 	font-style: italic;
+}
 
+.genre {
+	color: #666;
+	font-style: italic;
+	cursor: pointer;
+}
+.theme {
+	color: #666;
+	font-style: italic;
+	cursor: pointer;
 }
 
 .descr {

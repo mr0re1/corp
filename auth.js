@@ -38,7 +38,7 @@ var prepareCollection = function(collection, users) {
 
 var Auth = function(opt) {
     opt = opt || {};
-    this.provider = opt.provider;
+    this.provider = opt.user_controller;
 } 
 
 Auth.prototype.authenticate = function(name, pass, fn) {
@@ -93,4 +93,10 @@ Auth.prototype._addUser = function(users) {
     }
 }
 
-exports.Auth = Auth;
+var install = function(app, opt) {
+  var a = new Auth(opt);
+  app.use(a.middleware);
+  app.auth = a;
+}
+
+module.exports = install;

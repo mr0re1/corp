@@ -6,22 +6,17 @@ block content
 		.contents
 			h3= doc.name
 			.docview
-				-if (doc._content)
-				each topic in doc._content
-					-if (topic._type == 'topic' && topic._content)
-						.topic
-						each genre in topic._content
-							-if (genre._type == 'genre' && genre._content)
-								.genre
-								each item in genre._content
-									-if (typeof item == 'string')
-										|#{item}
-									-else if (item._type == 'lex')
-										span.lex(descr=JSON.stringify(item.descr))
-											|#{item.name}
-									-else if (item._type == 'ques')
-										span.ques
-											|#{item.text}
+				each item in doc._content
+					-if (typeof item == 'string')
+						|#{item}
+					-else if (item._type == 'lex')
+						span.lex(descr=JSON.stringify(item.descr))= item.name
+					-else if (item._type == 'ques')
+						span.ques= item.text
+					-else if (item._type == 'genre')
+						span.theme(type=item.type)| @
+					-else if (item._type == 'theme')
+						span.theme(type=item.type)| #
 	if (doc.audio)
 		.span12.audio-fake
 		.span12.audio-bar

@@ -1,7 +1,3 @@
-/**
- * Module dependencies.
- */
-
 var express = require('express')
   , routes = require('./routes')
   , path = require('path')
@@ -13,17 +9,30 @@ var express = require('express')
 
 // TODO: use config for host port and collections names
 var CollectionProvider = require('./collectionProvider').CollectionProvider;
+  
+var dbocb = function(name) {
+  return function(err, done) {
+    if (err) throw err;
+    else console.log(name + ' connect done');
+  } 
+}
 
 var UserController = require('./userController').UserController
-  , uc = new UserController(new CollectionProvider('localhost', 27017, 'corp', 'users'));
-var Auth = require('./auth').Auth
-  , auth = new Auth({ provider: uc });
+  , ucp = new CollectionProvider('localhost', 27017, 'corp', 'users', dbocb('users'))
+  , uc = new UserController(ucp);
+
+var LexemeController = require('./lexemeController').LexemeController
+  , lcp = new CollectionProvider('localhost', 27017, 'corp', 'lex', dbocb('lex'))
+  , lc = new LexemeController(lcp);
 
 var DocumentController = require('./documentController').DocumentController
-  , dc = new DocumentController(new CollectionProvider('localhost', 27017, 'corp', 'docs'));
-  
+  , dcp = new CollectionProvider('localhost', 27017, 'corp', 'docs', dbocb('docs'))
+  , dc = new DocumentController(dcp, lc);
+
+
 var PersonController = require('./personController').PersonController
-  , pc = new PersonController(new CollectionProvider('localhost', 27017, 'corp', 'persons'));
+  , pcp = new CollectionProvider('localhost', 27017, 'corp', 'persons', dbocb('persons'))
+  , pc = new PersonController(pcp);
 
 var app = express();
 
@@ -39,19 +48,13 @@ app.configure(function(){
   
   app.use(express.cookieParser());
   app.use(express.session({ secret: 'secret_string_for_compute_hash' }));
-  
-  app.use(auth.middleware);
-  
-  app.use(app.router);
   app.use(express.static(__dirname + '/public'));
+ 
+  require('./auth')(app, {user_controller: uc});
+  require('./permissions')(app);
+
+  app.use(app.router);
   
-  //Error handling
-  app.use(function(err, req, res, next){
-    if (! err) return next();
-    if (err instanceof PermissionDenied) {
-      res.render('error.jade', {user: req.user, title: "Доступ запрщен"});
-    } else next(err);
-  })
 });
 
 app.configure('development', function(){
@@ -60,26 +63,11 @@ app.configure('development', function(){
 
 
 app.get('/', routes.index);
-app.post('/login', function(req, res, next){ auth.login(req, res, next); }, function(req, res) { res.redirect('back'); } );
-app.all('/logout', function(req, res, next){ auth.logout(req, res, next); },  function(req, res) { res.redirect('back'); } );
+app.post('/login', function(req, res, next){ app.auth.login(req, res, next); }, function(req, res) { res.redirect('back'); } );
+app.all('/logout', function(req, res, next){ app.auth.logout(req, res, next); },  function(req, res) { res.redirect('back'); } );
 
-function PermissionDenied(msg) {
-  this.name = 'PermissionDenied';
-  Error.call(this, msg);
-  Error.captureStackTrace(this, arguments.callee);
-}
-util.inherits(PermissionDenied, Error);
-
-var havePermissionTo = function(group) {
-  return function(req, res, next) {
-    next();
-    //if (req.user) return next();
-    //next(new PermissionDenied("No permission to " + group));
-  }
-}
 
 app.get('/docs'
-  , havePermissionTo("docs")
   , function(req, res, next){
       dc.getDocs({}, function(err, docs) {
         if (err) return next(err);
@@ -90,7 +78,6 @@ app.get('/docs'
   , routes.docs);
 
 app.get('/doc/:id'
-  , havePermissionTo("doc")
   , function(req, res, next) {
       dc.getDoc(req.params.id, function(err, doc){
         if (err) return next(err);
@@ -100,10 +87,9 @@ app.get('/doc/:id'
     }
   , routes.doc);
 
-app.get('/doc-add', havePermissionTo("doc add"), routes.docadd);
+app.get('/doc-add', routes.docadd);
 
 app.post('/doc-add'
-  , havePermissionTo("doc add")
   , function(req, res, next) {
       var form = req.body;
       form.user = req.user;
@@ -122,10 +108,11 @@ app.post('/doc-add'
     }
   , routes.docadd);
 
+app.get('/search', routes.search);
+
 //app.get('/add-users', function() { auth._addUser([ {name: 'mr0re1', pass: 'retro'} ] ) } );
 
 app.get('/person'
-  , havePermissionTo("person")
   , function(req, res, next) {
       pc.getPersons({}, function(err, persons){
         if (err) return next(err);
@@ -137,7 +124,6 @@ app.get('/person'
 
 
 app.get('/person/:id'
-  , havePermissionTo("person")
   , function(req, res, next) {
       pc.getPerson(req.params.id, function(err, person){
         if (err) return next(err);
@@ -147,9 +133,8 @@ app.get('/person/:id'
     }
   , routes.person );
 
-app.get('/person-add', havePermissionTo("person add"), routes.personadd);
+app.get('/person-add', routes.personadd);
 app.post('/person-add'
-  , havePermissionTo("person add")
   , function(req, res, next) {
       var form = req.body;
       form.user = req.user;
@@ -180,8 +165,8 @@ var uploadFile = function(to, req, res, next) {
   filestream.on('end', function() { res.end(); });
 };
 
-app.get('/audio/:id', havePermissionTo('audio'), uploadFile.bind(null, __dirname + '/data/audio/'));
-app.get('/photo/:id', havePermissionTo('photo'), uploadFile.bind(null, __dirname + '/data/photo/'));
+app.get('/audio/:id', uploadFile.bind(null, __dirname + '/data/audio/'));
+app.get('/photo/:id', uploadFile.bind(null, __dirname + '/data/photo/'));
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));

@@ -13,6 +13,7 @@
     "mime": "*",
     "fs": "*",
     "sys": "*",
-    "async": "*"
+    "async": "*",
+    "functional-node": "*"
   }
 }

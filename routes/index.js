@@ -52,6 +52,18 @@ exports.docadd = function(req, res){
   );
 };
 
+
+exports.search = function(req, res){
+  res.render(
+    'search',
+    { 
+      form: req.searchform || {},
+      user: req.user, 
+      title: 'Search',
+    }
+  );
+}
+
 exports.persons = function(req, res){
   res.render(
     'persons',
