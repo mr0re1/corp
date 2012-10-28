@@ -32,7 +32,6 @@ prot.getDoc = function(id, fn) {
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 prot.loadDocument = function(form, fn) {
-	var _this = this;
 	async.series({
 		doc: parser.processString.bind(null, form.razm),
 		audio: function(fn) {
@@ -41,29 +40,31 @@ prot.loadDocument = function(form, fn) {
 			var target_path = './data/audio/' + file_name;
 			fs.rename(form.files.audio.path, target_path, function(err){
 				if (err) fn(err);
-				else fn(err, file_name);
+				else fn(null, file_name);
 			});
 		}
 	},
-	function(err, r) {
-		if (err) return fn(err);
+	function(r) {
 		r.doc.name = form.name;
 		r.doc.created_at = new Date();
 		r.doc.author = form.user;
 		if (r.audio) r.doc.audio = r.audio;
-		_this.cp.insert(r.doc, function(err, inserted){
+
+    
+
+		/*this.cp.insert(r.doc, function(err, inserted){
 			if (err) return fn(err);
 			var doc_id = inserted[0]._id;
 			fn(null, doc_id);
-		});
-	});
+		});*/
+	}.cf(fn));
 }
 
 prot.addDocument = function(doc, fn) {
   var addE = function(ins) {
     var doc_id = ins[0]._id;
     var contl = doc.content.length;
-    var onAdd = (function(){}).cf(fn, this); // !!!!!!!!!!!!!!!!!!!!
+    var onAdd = function(){}.cf(fn, this); // !!!!!!!!!!!!!!!!!!!!
     for (var pos = 0; pos < contl; ++pos) {
       var item = doc.content[pos];
       if (typeof item != 'string') continue;

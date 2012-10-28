@@ -1,40 +1,26 @@
 var express = require('express')
-  //, routes = require('./routes')(app)
-  , path = require('path')
-  , mime = require('mime')
-  , fs = require('fs')
   , util = require('util')
-  , http = require('http');
+  , http = require('http')
+  , async = require('async');
 
 
-// TODO: use config for host port and collections names
-var CollectionProvider = require('./collectionProvider').CollectionProvider;
-  
-var dbocb = function(name) {
-  return function(err, done) {
-    if (err) throw err;
-    else console.log(name + ' connect done');
-  } 
-}
+var Db = require('mongodb').Db;
+var Server = require('mongodb').Server;
 
-var UserController = require('./userController').UserController
-  , ucp = new CollectionProvider('localhost', 27017, 'corp', 'users', dbocb('users'))
-  , uc = new UserController(ucp);
+var CollectionProvider = require('./collectionProvider').CollectionProvider
+  , UserController = require('./userController').UserController
+  , LexemeController = require('./lexemeController').LexemeController
+  , DocumentController = require('./documentController').DocumentController
+  , PersonController = require('./personController').PersonController;
 
-var LexemeController = require('./lexemeController').LexemeController
-  , lcp = new CollectionProvider('localhost', 27017, 'corp', 'lex', dbocb('lex'))
-  , lc = new LexemeController(lcp);
+app = express();
 
-var DocumentController = require('./documentController').DocumentController
-  , dcp = new CollectionProvider('localhost', 27017, 'corp', 'docs', dbocb('docs'));
+var db = new Db('corp', new Server('localhost', 27017, {auto_reconnect: true}, {}));
 
-
-
-var PersonController = require('./personController').PersonController
-  , pcp = new CollectionProvider('localhost', 27017, 'corp', 'persons', dbocb('persons'))
-  , pc = new PersonController(pcp);
-
-var app = express();
+app.user_controller = new UserController( new CollectionProvider(db, 'users') );
+app.lexeme_controller = new LexemeController(new CollectionProvider(db, 'lex'));
+app.document_controller = new DocumentController(new CollectionProvider(db, 'docs'), app.lexeme_controller);
+app.person_controller = new PersonController(new CollectionProvider(db, 'persons'));
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
@@ -50,67 +36,25 @@ app.configure(function(){
   app.use(express.session({ secret: 'secret_string_for_compute_hash' }));
   app.use(express.static(__dirname + '/public'));
  
-  require('./auth')(app, {user_controller: uc});
+  require('./auth')(app);
   require('./permissions')(app);
 
   app.use(app.router);
   require('./routes')(app);
-
 });
 
 app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
-app.document_controller = new DocumentController(dcp, lc);
-
+db.open(function(err) {
+  if (err) throw err;
+  http.createServer(app).listen(app.get('port'), function(){
+    console.log("Express server listening on port " + app.get('port'));
+  });
+})
 
 /*
-
-app.get('/search', routes.search);
-
-//app.get('/add-users', function() { auth._addUser([ {name: 'mr0re1', pass: 'retro'} ] ) } );
-
-app.get('/person'
-  , function(req, res, next) {
-      pc.getPersons({}, function(err, persons){
-        if (err) return next(err);
-        res.persons = persons;
-        next();
-      });
-    }
-  , routes.persons );
-
-
-app.get('/person/:id'
-  , function(req, res, next) {
-      pc.getPerson(req.params.id, function(err, person){
-        if (err) return next(err);
-        res.person = person;
-        next();
-      });
-    }
-  , routes.person );
-
-app.get('/person-add', routes.personadd);
-app.post('/person-add'
-  , function(req, res, next) {
-      var form = req.body;
-      form.user = req.user;
-      form.files = req.files;
-      pc.addPerson(
-        form
-      , function(err, id){
-          if (err) {
-            form.error = err;
-            req.personaddform = form;
-            next();
-          }
-          else res.redirect('/person/' + id);
-        });
-    }
-  , routes.personadd);
-
 var uploadFile = function(to, req, res, next) {
   var file = to + req.params.id;
   var filename = path.basename(file);
@@ -127,6 +71,6 @@ var uploadFile = function(to, req, res, next) {
 app.get('/audio/:id', uploadFile.bind(null, __dirname + '/data/audio/'));
 app.get('/photo/:id', uploadFile.bind(null, __dirname + '/data/photo/'));
 */
-http.createServer(app).listen(app.get('port'), function(){
-  console.log("Express server listening on port " + app.get('port'));
-});
+
+
+

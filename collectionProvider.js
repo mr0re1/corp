@@ -1,17 +1,23 @@
 'use strict';
 require('./carefree');
 
-var Db = require('mongodb').Db;
+//var Db = require('mongodb').Db;
 var Connection = require('mongodb').Connection;
-var Server = require('mongodb').Server;
+//var Server = require('mongodb').Server;
 var BSON = require('mongodb').BSON;
 var ObjectID = require('mongodb').ObjectID;
 
-var CollectionProvider = function (host, port, db_name, collection_name, fn) {
-	this.db = new Db(db_name, new Server(host, port, {auto_reconnect: true}, {}));
-	this.collectionName = collection_name;
-	this.db.open(fn);
-};
+//var CollectionProvider = function (host, port, db_name, collection_name, fn) {
+//	this.db = new Db(db_name, new Server(host, port, {auto_reconnect: true}, {}));
+//	this.collectionName = collection_name;
+//	this.db.open(fn);
+//};
+//
+
+var CollectionProvider = function(db, collection_name) {
+  this.db = db;
+  this.collectionName = collection_name;
+}
 
 var prot = CollectionProvider.prototype;
 
