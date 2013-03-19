@@ -1,7 +1,13 @@
-li.track(track_name=name)
-  span #{duration}
-  span #{name}
-
-  i.icon-arrow-left.start-map-icon
-  i.icon-arrow-right.end-map-icon
-  i.icon-remove
+li.track(track=t.id)
+  span.number #{t.id}.
+  
+  if t.name
+    span #{t.name}
+    if t.uploaded
+      i.icon-remove
+    else
+      i.icon-refresh
+  else
+    label.uploader
+      i.icon-upload
+      |загрузить

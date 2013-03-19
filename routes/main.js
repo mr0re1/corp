@@ -1,9 +1,11 @@
 module.exports = function(app) {
-  app.get('/', function(req, res){
+  app.get('/*', function(req, res){
     res.render(
-      'index',
-      { user: req.user
-      , title: 'Hello' }
+      'app',
+      { 
+        user: req.user
+     // , title: 'Hello' 
+      }
     )
   });
 }

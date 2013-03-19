@@ -15,6 +15,9 @@
     "sys": "*",
     "async": "*",
     "functional-node": "*",
-    "asset-rack": "*"
+    "asset-rack": "*",
+    "dbox": "*",
+    "request": "*",
+    "iconv": "*"
   }
 }

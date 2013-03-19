@@ -1,74 +1,66 @@
+var path = require('path');
+
 module.exports = function(app) {
+  var dc = app.document_controller,
+      __ = '/api/';
 
-  var doc_list_getter = function(criteria) {
-    criteria = criteria || {};
-    return function(req, res, next) {
-      var c = (typeof criteria == 'function') ? criteria(req) : criteria;
-      app.document_controller.getDocs(c, function(docs){
-        res.locals.docs = docs;
-        next();
-      }.cf(next));
-    };
-  };
-    
-  var doc_get = function(req, res, next) {
-    app.document_controller.getDoc(req.params.id, function(doc){
-      res.locals.doc = doc; 
-      next();
-    }.cf(next));
-  };
- 
-  var doc_add =  function(req, res, next) {
-    var form = req.body;
-    form.user = req.user;
-    form.files = req.files;
+  app.get(__+'document', function(req, res) {
+    var q = req.query;
+    dc.getDocs(q, function(err, docs){
+        if (err) res.send(500, err);
+        else res.send(200, docs);
+    });
+  });
 
-    app.document_controller.loadDocument(
-      form
+  app.get(__+'document/:id', function(req, res){
+    dc.getDoc(req.params.id, function(err, doc){
+      if (err) {
+        var err_code = 400;
+        //TODO: Classify error code
+        res.send(err_code, err);
+      } else res.send(200, doc)
+    })
+  });
+
+  app.post(__+'document', function(req, res){
+    var b = req.body;
+    b.user = req.user;
+    dc.loadDocument(
+      b
     , function(err, id){
         if (err) {
-          form.error = err;
-          req.docaddform = form;
-          next();
+          var err_code = 400;
+          //TODO: Classify error
+          res.send(err_code, err);
         }
-        else res.redirect('/doc/' + id);
+        else res.send(200, { _id: id });
       });
-  };
-
-  var doc_remove = function(req, res, next) {
-    app.document_controller.removeDocument(req.params.id, next)
+  });
+  
+  //TODO: move track methods into API
+  var track_add = function(req, res, next) {
+    if(! req.files || ! req.files.file) next(new Error("No file!"));
+    else {
+      var target_path = '/audio/' + path.basename(req.files.file.path)
+        , name = req.files.file.name;
+        
+      dc.fm.upload(req.files.file.path, target_path, function(err){
+        if (err) next(err)
+        else res.json( {Status: 'OK', name: name, path: target_path } );
+      });
+    }
   };
   
-  var doc_public = function(req, res, next) {
-    app.document_controller.publicDocument(req.params.id, next)
+  var track_remove = function(req, res, next) {
+    if (! req.body.path) return next(new Error("Need track path"));
+    //TODO: Check permissions
+    dc.fm.rm(req.body.path, function(err) {
+      if (err) next(err)
+      else res.json({Status: 'OK'});
+    });
   };
-  var doc_unpublic = function(req, res, next) {
-    app.document_controller.unpublicDocument(req.params.id, next)
-  };
+
+  app.post('/track-add', track_add);
+  app.post('/track-remove', track_remove);
   
-  var redirect_back = function(req, res) {
-    res.redirect('back');
-  };
-
-  var res_render = function(template, opt) {
-    return function(req, res) { res.render(template, opt) };
-  };
-
-  app.get( '/docs', doc_list_getter({'public': true}), res_render('docs'));
-  app.get('/my/docs', 
-          doc_list_getter(function(req){ return {author: req.user} }), 
-          res_render('my_docs'));
-  app.get('/doc/:id', doc_get, res_render('doc'));
-  
-  app.post('/doc-remove/:id', doc_remove, redirect_back);
-  app.post('/doc-public/:id', doc_public, redirect_back);
-  app.post('/doc-unpublic/:id', doc_unpublic, redirect_back);
-  
-  app.get('/doc-edit', 
-          function(q, r, n) {r.locals.doc = {}; n()},  
-          res_render('docedit'));
-  app.get('/doc-edit/:id', doc_get, res_render('docedit'));
-
-
-
 }

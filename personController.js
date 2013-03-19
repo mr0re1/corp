@@ -2,9 +2,11 @@ var async = require('async')
 	, path = require('path')
 	, fs = require('fs')
 	, CollectionProvider = require('./collectionProvider').CollectionProvider;
+	
 
-PersonController = function(cp) {
+PersonController = function(cp, fm) {
 	this.cp = cp;
+	this.fm = fm;
 };
 
 PersonController.prototype.getPersons = function(opt, fn) {
@@ -37,12 +39,11 @@ PersonController.prototype.addPerson = function(form, fn) {
 				fn(null, p);
 			},
 			photo: function(fn) {
-				if (! form.files.photo || ! form.files.photo.size ) return fn(null, null);
-				var file_name = path.basename(form.files.photo.path);
-				var target_path = './data/photo/' + file_name;
-				fs.rename(form.files.photo.path, target_path, function(err){
-					if (err) fn(err);
-					else fn(null, file_name);
+				if (! form.files.photo || ! form.files.photo.size ) return fn();
+				var target_path = '/photo/' + path.basename(form.files.photo.path);
+				_this.fm.upload(form.files.photo.path, target_path, function(err){
+					if (err) fn(err)
+					else fn(null, target_path);
 				});
 			},
 		},

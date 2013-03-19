@@ -23,8 +23,14 @@
   overflow-x: auto;
 }
 
-.track {
-  &.current {
-    background-color: #aaf;
+.tracklist {
+  list-style: none;
+  .track {
+    .number {
+      float: left;
+      font-weight: bold;
+      width: 25px;
+      text-align: center;
+    }
   }
 }

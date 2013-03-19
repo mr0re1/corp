@@ -1,10 +1,10 @@
 module.exports = function(app) {
   [ 
+    'auth',
+    'document',
     'main'
-  , 'auth' 
-  , 'document'
-  , 'person'
-  , 'search'
+//  , 'person'
+//  , 'search'
   ].forEach(function(name) { 
     require('./' + name)(app)
   })

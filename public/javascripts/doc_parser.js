@@ -1,7 +1,5 @@
 window.CorpParser = (function () { 
 
-
-
 var parseDescription = function(str) {
 	return {};
  //var descriptions = str.split('|');
@@ -73,6 +71,11 @@ var isQues = function(s) {
   return (ques_re.test(s)) ? [ {_type: 'ques', text: RegExp.$1 }, RegExp.rightContext ] : null;
 }
 
+var audio_re = /^&(\d+)/;
+var isAudio = function(s) {
+	return (audio_re.test(s)) ? [ {_type: 'audio', id: RegExp.$1}, RegExp.rightContext] : null;
+}
+
 var parse = function(str) {
   var content = [];
   
@@ -83,7 +86,7 @@ var parse = function(str) {
   
   while (str.length) {
     var position = start_length - str.length;
-    var item = isLexem(str) || isQues(str) || isGenre(str) || isTheme(str);
+    var item = isLexem(str) || isQues(str) || isGenre(str) || isTheme(str) || isAudio(str);
     if (item) {
       if (current_plain_text.length) {
         content.push(current_plain_text);
@@ -117,11 +120,10 @@ var parse = function(str) {
     }
   }
   if (current_plain_text.length) content.push(current_plain_text);
-  
   return content;
 }
 
 return {'parse': parse};
-})();
+})(); 
 
 

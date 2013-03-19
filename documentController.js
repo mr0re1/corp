@@ -15,15 +15,16 @@ var moveFile = function(from, to, fn) {
 	});
 }
 
-DocumentController = function(cp, lc) {
+DocumentController = function(cp, lc, fm) {
 	this.cp = cp;
   this.lc = lc;
+	this.fm = fm;
 }
 
 var prot = DocumentController.prototype;
 
 prot.getDocs = function(opt, fn) {
-	this.cp.find(opt, {_content: false}, fn);
+	this.cp.find(opt, {content: false, source: false}, fn);
 };
 
 prot.getDoc = function(id, fn) {
@@ -32,31 +33,19 @@ prot.getDoc = function(id, fn) {
   }.cf(fn, this));
 };
 
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 prot.loadDocument = function(form, fn) {
-	async.series({
-		doc: parser.processString.bind(null, form.razm),
-		audio: function(fn) {
-			if (! form.files.audio || ! form.files.audio.size ) return fn();
-			var file_name = path.basename(form.files.audio.path);
-			var target_path = './data/audio/' + file_name;
-			fs.rename(form.files.audio.path, target_path, function(err){
-				if (err) fn(err);
-				else fn(null, file_name);
-			});
-		}
-	},
-	function(r) {
-		r.doc.name = form.name;
-		r.doc.created_at = new Date();
-		r.doc.author = form.user;
-		if (r.audio) r.doc.audio = r.audio;
-
-    this.compressDocument(r.doc, function(c_doc) {
-        this.addDocument(c_doc, fn)
-      }.cf(fn, this)
-    );
-	}.cf(fn, this));
+  var doc = {
+    name: form.name,
+    source: form.source,
+    create_time: new Date(),
+    author: form.user,
+    content: form.content,
+    audio: form.audio,
+  };
+  this.compressDocument(doc, function(c_doc) {
+      this.addDocument(c_doc, fn)
+    }.cf(fn, this)
+  );
 }
 
 prot.removeDocument = function(id, fn) {
