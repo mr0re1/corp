@@ -1,0 +1,50 @@
+#documents.page
+  .span3
+    ul.nav.nav-tabs.nav-stacked
+      li
+        a(href='#/document') Последние изменения
+      li
+        a(href='#/document/user/#{user}') Мои документы
+      li
+        a(href='#/document/add') Добавить документ
+  .span9
+    h3(name='title')
+    ul(name='docs')
+
+#document_view.page
+  .descr.well.well-small
+  .span12
+  .contents
+    h3(name='name')
+    .docview(name='content')
+    
+       
+
+#document_add.page
+  .span12
+    input.input-xxlarge(
+      name='name', 
+      type='text', 
+      placeholder='Название документа')
+  .span10
+    .span4
+      label Размеченый текст
+    .span4
+      label.btn.btn-primary.span3(name='SourceLoadLabel', style='display:none;')
+        |Загрузить текст из файла
+      input.span8(name='SourceLoadButton', type='file', style='display: none;')
+
+    textarea.span10(name='source', rows=24)
+  .span2
+    h5 Звукозаписи
+    ul.span2(name='tracklist')
+  
+  .span12.form-actions
+    button.btn.btn-large.btn-primary(name='submit') Добавить документ
+
+
+script(src='/javascripts/document/index.js')
+script(src='/javascripts/document/document_view.js')
+script(src='/javascripts/document/document_add.js')
+
+script(src='/javascripts/doc_parser.js')

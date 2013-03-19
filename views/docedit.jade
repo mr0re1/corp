@@ -1,0 +1,38 @@
+extends layout
+
+block content
+  .span12
+    .tabbable
+      ul.nav.nav-tabs
+        li.active
+          a(href='#SourceTab', data-toggle='tab') Источник
+        li
+          a(href='#PreviewTab', data-toggle='tab') Предпросмотр
+        li
+          a(href='#AudioTab', data-toggle='tab') Звукозаписи
+      .tab-content
+        .tab-pane.active.row(id='SourceTab')
+          .span12
+            textarea.span12(name='SourceText', rows=20)
+          .span12
+            input(name='SourceLoadButton', type='file') Загрузить текст из файла
+            span указать кодировку
+            input(name='SourceEncodingCheckbox', type='checkbox')
+            select(name='SourceEncodingSelector', style='display:none;')
+              option(value='CP-1251') cp-1251
+              option(value='UTF-8') utf-8
+        .tab-pane.row(id='PreviewTab')
+          .span12.doc-edit-preview(name='Content')
+        .tab-pane.row(id='AudioTab') 
+          .span2
+            h4 Звукозаписи
+            ul(name='TrackList')
+            button(name='AddTrackButton') добавить
+          .span10.doc-audio-content(name='Content')
+  script(src='/javascripts/doc_parser.js')
+  script(src='/javascripts/doc_view.js')
+  script(src='/javascripts/SourceEditor.js')
+  script(src='/javascripts/Document.js')
+  script(src='/javascripts/AudioMapper.js')
+  script(src='/javascripts/docedit.js')
+  != assets.tag('/templates.js')

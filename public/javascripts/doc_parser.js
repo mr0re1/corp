@@ -1,49 +1,42 @@
-//TODO: Написать комментарии
+window.CorpParser = (function () { 
 
-var util = require('util')
-  , fs = require('fs')
-  , _set = require('./settings')
-  , dp = _set.DescriptionProperties;
 
-String.prototype.chomp = function() {
-//    TODO: Do It right!!!
-    return this.replace(/^\s+/, '').replace(/\s+$/, '');    
-}
 
 var parseDescription = function(str) {
- var descriptions = str.split('|');
- var d_arr = [];
- for (var d_ind in descriptions) {
-  var d_s = descriptions[d_ind];
-  var d = {};
-  props = d_s.split(/=|,/);
-  for (var p_ind in props) {
-    var prop = props[p_ind].chomp();
-    if (! prop) continue;
-    var is_spec = false;
-    if(/(.+)\((.+)\)/.test(prop)) { // 'first' and 'lit'
-      d.first = RegExp.$1;
-      d.lit = RegExp.$2;
-      is_spec = true;
-    }
-    for (var prop_name in dp) {
-      if (prop in dp[prop_name]) {
-        if (d[prop_name] !== undefined) console.error('REWRITE PROPERTY "%s" in description "%s"', prop_name, d_s);
-        d[prop_name] = dp[prop_name][prop];
-        is_spec = true;
-      }
-    }
-    if (! is_spec) {
-      console.error('CAN\'T SPECIFICATE PROPERTY "%s" in description "%s"', prop, d_s);
-    }
-  }
-  d_arr.push(d);
- }
- if (d_arr.length) {
-  if (d_arr.length == 1) return d_arr[0]; // Single description
-  else return d_arr; //Multi description
- }
- return undefined; // Empty or invalid description
+	return {};
+ //var descriptions = str.split('|');
+ //var d_arr = [];
+ //for (var d_ind in descriptions) {
+ // var d_s = descriptions[d_ind];
+ // var d = {};
+ // props = d_s.split(/=|,/);
+ // for (var p_ind in props) {
+ //   var prop = props[p_ind].chomp();
+ //   if (! prop) continue;
+ //   var is_spec = false;
+ //   if(/(.+)\((.+)\)/.test(prop)) { // 'first' and 'lit'
+ //     d.first = RegExp.$1;
+ //     d.lit = RegExp.$2;
+ //     is_spec = true;
+ //   }
+ //   for (var prop_name in dp) {
+ //     if (prop in dp[prop_name]) {
+ //       if (d[prop_name] !== undefined) console.error('REWRITE PROPERTY "%s" in description "%s"', prop_name, d_s);
+ //       d[prop_name] = dp[prop_name][prop];
+ //       is_spec = true;
+ //     }
+ //   }
+ //   if (! is_spec) {
+ //     console.error('CAN\'T SPECIFICATE PROPERTY "%s" in description "%s"', prop, d_s);
+ //   }
+ // }
+ // d_arr.push(d);
+ //}
+ //if (d_arr.length) {
+ // if (d_arr.length == 1) return d_arr[0]; // Single description
+ // else return d_arr; //Multi description
+ //}
+ //return undefined; // Empty or invalid description
 }
 
 var constructLexem = function(word, descr) {
@@ -80,8 +73,8 @@ var isQues = function(s) {
   return (ques_re.test(s)) ? [ {_type: 'ques', text: RegExp.$1 }, RegExp.rightContext ] : null;
 }
 
-var processString = function(str, clb) {
-  var doc = { content: [] };
+var parse = function(str) {
+  var content = [];
   
   var start_length = str.length
     , current_plain_text = ""
@@ -93,7 +86,7 @@ var processString = function(str, clb) {
     var item = isLexem(str) || isQues(str) || isGenre(str) || isTheme(str);
     if (item) {
       if (current_plain_text.length) {
-        doc.content.push(current_plain_text);
+        content.push(current_plain_text);
         current_plain_text = "";
       }
       if (item._type == 'theme') {
@@ -116,24 +109,19 @@ var processString = function(str, clb) {
           current_genre = item.type;
         }
       }
-      doc.content.push(item[0]);
+      content.push(item[0]);
       str = item[1];
     } else {
       current_plain_text = current_plain_text + str[0];
       str = str.substring(1);
     }
   }
-  if (current_plain_text.length) doc.content.push(current_plain_text);
+  if (current_plain_text.length) content.push(current_plain_text);
   
-  clb(null, doc);
+  return content;
 }
 
-var processFile = function(path, clb) {
-  fs.readFile(path, 'utf-8', function(err, cont){
-    if (err) clb(err);
-    else processString(cont, clb);
-  });
-}
+return {'parse': parse};
+})();
 
-exports.processString = processString;
-exports.processFile = processFile;
+

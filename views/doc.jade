@@ -6,7 +6,7 @@ block content
 		.contents
 			h3= doc.name
 			.docview
-				each item in doc._content
+				each item in doc.content
 					-if (typeof item == 'string')
 						|#{item}
 					-else if (item._type == 'lex')

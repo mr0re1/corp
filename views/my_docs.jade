@@ -1,0 +1,43 @@
+extends layout
+
+block content
+	.span3
+		ul.nav.nav-tabs.nav-stacked
+			li
+				a(href='/my/docs') Мои документы
+			li
+				a(href='/doc-edit') Добавить документ
+	.span9
+		h3 Мои документы
+		table.table
+			each doc in docs
+				tr(doc_id='#{doc._id}')
+					td.span1
+						if(! doc.public)
+							a.icon-star-empty(
+							href='/doc-public/#{doc._id}',
+							method='post',
+							title='не опубликовано, опубликовать'
+						)
+						else
+							a.icon-star(
+								href='/doc-unpublic/#{doc._id}',
+								method='post',
+								title='опубликовано, снять с публикации'
+							)
+					td.span1
+						a.icon-edit(href='/doc-edit/#{doc._id}', title='править')
+					td
+						a(href='/doc/#{doc._id}')=doc.name
+					td.span1
+						span(title='создан')= dateFormat(doc.created_at)
+					td.span1
+						a.icon-trash(
+							href='/doc-remove/#{doc._id}',
+							title='удалить',
+							method='post',
+							check='return confirm("Вы уверены что хотите удалить документ <<#{doc.name}>>?")'
+						)
+				
+				
+		

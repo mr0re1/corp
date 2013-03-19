@@ -27,7 +27,9 @@ prot.proxyMethod = function (method) {
 prot.findOne = prot.proxyMethod('findOne');
 prot.insert = prot.proxyMethod('insert');
 prot.update = prot.proxyMethod('update');
+prot.findAndModify = prot.proxyMethod('findAndModify');
 prot.findCursor = prot.proxyMethod('find');
+
 
 prot.find = function () {
   var args = Array.prototype.slice.apply(arguments)
@@ -43,5 +45,8 @@ prot.getById = function (id, fn) {
   var _id = this.IDfromString(id);
   this.findOne({'_id': _id}, fn);
 };
-
+prot.removeByID = function(id, fn){
+	var _id = this.IDfromString(id);
+	this.findAndModify({'_id': _id}, {}, {}, {'remove': true}, fn);
+}
 exports.CollectionProvider = CollectionProvider;

@@ -7,7 +7,7 @@ var calcHash = function(pwd, salt, fn) {
     if (3 == arguments.length) {
         crypto.pbkdf2(pwd, salt, iterations, len, function(err, hash){
             if (err) return fn(err);
-            fn(null, hash, salt);
+            fn(null, hash.toString('binary'), salt);
         });
     } else {
         fn = salt;
@@ -50,7 +50,7 @@ Auth.prototype.authenticate = function(name, pass, fn) {
             if (err) return fn(err);
             if (hash == user.hash) return fn(null, user);
             fn(new Error('invalid password'));
-        })
+        });
     });
 }
 
@@ -71,8 +71,9 @@ Auth.prototype.logout = function(req, res, next) {
 }
 
 Auth.prototype.middleware = function(req, res, next) {
+    res.locals.user = req.user = '';
     if(req.session.user) {
-      req.user = req.session.user.name;
+      res.locals.user = req.user = req.session.user.name;
     }
     next();
 };
@@ -96,6 +97,9 @@ Auth.prototype._addUser = function(users) {
 }
 
 var install = function(app, opt) {
+  opt = opt || {};
+  opt.user_controller = app.user_controller;
+
   var a = new Auth(opt);
   app.use(a.middleware);
   app.auth = a;

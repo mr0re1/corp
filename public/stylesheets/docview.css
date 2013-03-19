@@ -4,7 +4,6 @@
 }
 
 .lex {
-	/*background-color: #ddf;*/
 	cursor: pointer;
 }
 .lex.selected {
@@ -15,7 +14,6 @@
 .ques {
 	padding-left: 20px;
 	margin: 20px 0 10px 0;
-	/*background-color: #fdd;*/
 	display: block;
 	font-style: italic;
 }

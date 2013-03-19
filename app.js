@@ -17,7 +17,7 @@ app = express();
 
 var db = new Db('corp', new Server('localhost', 27017, {auto_reconnect: true}, {}));
 
-app.user_controller = new UserController( new CollectionProvider(db, 'users') );
+app.user_controller = new UserController( new CollectionProvider(db, 'users'));
 app.lexeme_controller = new LexemeController(new CollectionProvider(db, 'lex'));
 app.document_controller = new DocumentController(new CollectionProvider(db, 'docs'), app.lexeme_controller);
 app.person_controller = new PersonController(new CollectionProvider(db, 'persons'));
@@ -31,16 +31,22 @@ app.configure(function(){
   app.use(express.logger('dev'));
   app.use(express.bodyParser({uploadDir:'./uploads'}));
   app.use(express.methodOverride());
-  
+
   app.use(express.cookieParser());
   app.use(express.session({ secret: 'secret_string_for_compute_hash' }));
   app.use(express.static(__dirname + '/public'));
- 
+
   require('./auth')(app);
+  
+  require('./assets')(app);
+ 
+  app.use(app.router);
+  
+  require('./routes')(app);  
   require('./permissions')(app);
 
-  app.use(app.router);
-  require('./routes')(app);
+  app.locals.dateFormat = function() { return 'xxx' };
+
 });
 
 app.configure('development', function(){
@@ -59,10 +65,10 @@ var uploadFile = function(to, req, res, next) {
   var file = to + req.params.id;
   var filename = path.basename(file);
   var mimetype = mime.lookup(file);
-  
+
   res.setHeader('Content-disposition', 'attachment; filename=' + filename);
   res.setHeader('Content-type', mimetype);
-  
+
   var filestream = fs.createReadStream(file);
   filestream.on('data', function(chunk) { res.write(chunk); });
   filestream.on('end', function() { res.end(); });

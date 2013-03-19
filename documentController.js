@@ -15,7 +15,7 @@ var moveFile = function(from, to, fn) {
 	});
 }
 
-DocumentController = function(cp, lc, fn) {
+DocumentController = function(cp, lc) {
 	this.cp = cp;
   this.lc = lc;
 }
@@ -27,7 +27,9 @@ prot.getDocs = function(opt, fn) {
 };
 
 prot.getDoc = function(id, fn) {
-	this.cp.getById(id, fn);
+	this.cp.getById(id, function(doc){
+    this.decompressDocument(doc, fn);
+  }.cf(fn, this));
 };
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -50,42 +52,60 @@ prot.loadDocument = function(form, fn) {
 		r.doc.author = form.user;
 		if (r.audio) r.doc.audio = r.audio;
 
-    
+    this.compressDocument(r.doc, function(c_doc) {
+        this.addDocument(c_doc, fn)
+      }.cf(fn, this)
+    );
+	}.cf(fn, this));
+}
 
-		/*this.cp.insert(r.doc, function(err, inserted){
-			if (err) return fn(err);
-			var doc_id = inserted[0]._id;
-			fn(null, doc_id);
-		});*/
-	}.cf(fn));
+prot.removeDocument = function(id, fn) {
+	this.cp.removeByID(id,fn);
+}
+
+prot.publicDocument = function(id, fn) {
+	var _id = this.cp.IDfromString(id);
+	this.cp.update({'_id': _id}, {'$set': {'public': true}}, {'safe': true}, fn);
+}
+
+prot.unpublicDocument = function(id, fn) {
+	var _id = this.cp.IDfromString(id);
+	this.cp.update({'_id': _id}, {'$set': {'public': false}}, {'safe': true}, fn);
 }
 
 prot.addDocument = function(doc, fn) {
   var addE = function(ins) {
     var doc_id = ins[0]._id;
+    fn(null, doc_id);
+
     var contl = doc.content.length;
-    var onAdd = function(){}.cf(fn, this); // !!!!!!!!!!!!!!!!!!!!
     for (var pos = 0; pos < contl; ++pos) {
       var item = doc.content[pos];
       if (typeof item != 'string') continue;
       if (item.charAt(0) != 'l') continue;
-      this.lc.addEntry(item.slice(1), doc_id, pos, onAdd);
+      this.lc.addEntry(item.slice(1), doc_id, pos, function(){}.cf());
     }
-    fn(doc_id);
   }
-  this.cp.insert(doc, addE.cf(fn, this));
+  this.cp.insert(doc, addE.cf(fn, this)); 
 }
 
 prot.compressDocument = function(doc, fn) {
-  var compileDoc = function(parts) {
-    doc.content  = parts.content;
-    fn(null, doc);
-  }
+  var compr_cont = []
+    , that = this;
 
-  async.parallel({
-    content: async.map.bind(this, doc.content, this.compressItem.bind(this))
-  }
-  , compileDoc.cf(fn, this));
+  var compressQueue = function() {
+    if (! doc.content.length) {
+      doc.content = compr_cont.reverse();
+      return fn(null, doc); };
+
+    that.compressItem( 
+      doc.content.pop(), 
+      function(item) {
+        compr_cont.push(item);
+        compressQueue();
+      }.cf(fn));
+  };
+  compressQueue();
 }
 
 prot.compressItem = function(item, fn) {
@@ -93,6 +113,61 @@ prot.compressItem = function(item, fn) {
   if (typeof item == 'string') return fn(null, 'p' + item);
   if (item._type == 'lex') return this.lc.prepareLexeme(item, addL.cf(fn));
   fn (null, item);
+}
+
+prot.decompressDocument = function(doc, fn) {
+  async.map(doc.content, this.decompressItem.bind(this), function(content) {
+    doc.content = content;
+    fn(null, doc);
+  }.cf(fn, this));
+}
+
+prot.decompressItem = function(item, fn) {
+  if ('string' != typeof item) return fn(null, item);
+  var fstCh = item.charAt(0)
+    , tail = item.slice(1);
+  if (fstCh == 'p') return fn(null, tail);
+  if (fstCh == 'l') { return this.lc.getLexeme(tail, fn) }
+  
+  fn(new Error("undefined item: " + item));
+}
+
+prot.search = function(form, fn) {
+  var sf = {};
+  for (var k in form) 
+    if (form[k] && k != 'user') sf[k] = form[k];
+
+  console.log('Search form: ', sf);
+  var res = []
+    , curs;
+
+  var collectResult = function (docId, pos) {
+    if (! docId) return fn(null, res);
+    
+    this.getDocFragment(docId, pos, function(doc){
+      res.push(doc);
+      curs.next( collectResult );
+    }.cf(fn));
+  }.cf(fn, this);
+
+  this.lc.search(sf, function(cursor) {
+    curs = cursor;
+    curs.next( collectResult );
+  }.cf(fn));
+}
+
+prot.getDocFragment = function(docId, pos, fn) {
+  this.cp.getById(docId, function(doc){
+    
+    var left = pos
+      , right = pos
+      , cont = doc.content
+      , conl = cont.length;
+    while (left > 0 && 'string' === typeof cont[left]) left--;
+    while (right < conl && 'string' === typeof cont[right]) right++;
+    doc.content = doc.content.slice(left, right);
+    this.decompressDocument(doc, fn);
+  }.cf(fn, this))  
 }
 
 exports.DocumentController = DocumentController;

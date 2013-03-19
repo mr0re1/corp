@@ -54,9 +54,10 @@ EntiresCursor.prototype.next = function(fn) {
  *
  *
  */
-proto.search = function(lexeme) {
-  var cursor = this.cp.findCursor(lexeme);
-  return new EntiresCursor(cursor);
+proto.search = function(lexeme, fn) {
+  this.cp.findCursor(lexeme, function(cursor) {
+    fn(null, new EntiresCursor(cursor)); 
+  }.cf(fn));
 }
 
 /**
@@ -101,11 +102,13 @@ proto.removeEntry = function(hash, doc_id, pos, fn) {
 */
 proto.addEntry = function(hash, doc_id, pos, fn) {
   var place = 'in.' + doc_id;
+  var push = {$push: {}}; push['$push'][place] = pos;
+  var set  = {$set:  {}};  set['$set'][place] = [pos];
   var processLexeme = function(lex) {
     if(Array.isArray(lex.in[doc_id]))
-      this.cp.update({_id: lex._id}, {$push: {place: pos}}, {safe: true}, fn)
+      this.cp.update({_id: lex._id}, push, {safe: true}, fn)
     else 
-      this.cp.update({_id: lex._id}, {$set: {place: [pos]}}, {safe: true}, fn);
+      this.cp.update({_id: lex._id}, set, {safe: true}, fn);
   };
   this.getLexeme(hash, processLexeme.cf(fn, this));
 }

@@ -9,16 +9,3 @@ module.exports = function(app) {
     require('./' + name)(app)
   })
 }
-
-
-exports.search = function(req, res){
-  res.render(
-    'search',
-    { 
-      form: req.searchform || {},
-      user: req.user, 
-      title: 'Search',
-    }
-  );
-}
-

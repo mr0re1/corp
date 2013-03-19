@@ -14,5 +14,23 @@ block content
     .span3
       label Морфологические признаки
       input(name='descr', type='text', value=form.descr)
-    button.btn(type='submit') Поиск 
+    button.btn(type='submit') Поиск
+  #result
+    ul
+      each doc in docs
+        li
+          h4= doc.name
+          .docview
+            each item in doc.content
+              -if (typeof item == 'string')
+                |#{item}
+              -else if (item._type == 'lex')
+                span.lex(descr=JSON.stringify(item.descr))= item.name
+              -else if (item._type == 'ques')
+                span.ques= item.text
+              -else if (item._type == 'genre')
+                span.theme(type=item.type)| @
+              -else if (item._type == 'theme')
+                span.theme(type=item.type)| #
+
 
