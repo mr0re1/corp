@@ -63,7 +63,6 @@ page.drow = function(doc) {
   var cl = doc.content.length
     , item
     , tmpl;
-  console.log(doc.audio);
   for (var i = 0; i < cl; ++i) {
     item = doc.content[i];
     item.nom = i;

@@ -121,25 +121,24 @@ prot.decompressItem = function(item, fn) {
   fn(new Error("undefined item: " + item));
 }
 
-prot.search = function(form, fn) {
-  var sf = {};
-  for (var k in form) 
-    if (form[k] && k != 'user') sf[k] = form[k];
-
-  console.log('Search form: ', sf);
+prot.search = function(params, fn) {
   var res = []
-    , curs;
-
+    , curs
+    , limit = 10;
+  //TODO: make limit parametr
   var collectResult = function (docId, pos) {
-    if (! docId) return fn(null, res);
+    if (! docId || ! limit) return fn(null, res);
     
     this.getDocFragment(docId, pos, function(doc){
-      res.push(doc);
+      if(doc){
+        limit--;
+        res.push(doc);
+      }
       curs.next( collectResult );
     }.cf(fn));
   }.cf(fn, this);
 
-  this.lc.search(sf, function(cursor) {
+  this.lc.search(params, function(cursor) {
     curs = cursor;
     curs.next( collectResult );
   }.cf(fn));
@@ -147,7 +146,7 @@ prot.search = function(form, fn) {
 
 prot.getDocFragment = function(docId, pos, fn) {
   this.cp.getById(docId, function(doc){
-    
+    if (! doc) return fn();
     var left = pos
       , right = pos
       , cont = doc.content

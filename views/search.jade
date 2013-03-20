@@ -1,36 +1,30 @@
-extends layout
-
-block content
-  form(method='post', enctype='multipart/form-data', action='/search')
-    .span3
-      label Слово
-      input(name='name', type='text', value=form.name)
-    .span3
-      label Начальная форма
-      input(name='first', type='text', value=form.first)
-    .span3
-      label Литературное
-      input(name='lit', type='text', value=form.lit)
-    .span3
-      label Морфологические признаки
-      input(name='descr', type='text', value=form.descr)
-    button.btn(type='submit') Поиск
-  #result
-    ul
-      each doc in docs
-        li
-          h4= doc.name
-          .docview
-            each item in doc.content
-              -if (typeof item == 'string')
-                |#{item}
-              -else if (item._type == 'lex')
-                span.lex(descr=JSON.stringify(item.descr))= item.name
-              -else if (item._type == 'ques')
-                span.ques= item.text
-              -else if (item._type == 'genre')
-                span.theme(type=item.type)| @
-              -else if (item._type == 'theme')
-                span.theme(type=item.type)| #
-
+#search.page
+  .row
+    ul.breadcrumb
+      li
+        a(href='#/search/std', name='std-link')Базовый
+        span.divider
+          | /
+      li
+        a(href='#/search/ext', name='ext-link')Расширенный
+  .row 
+    .hero-unit(name='std-params')
+      .p
+        | Введите слово, которое хотите найти
+      .input-append
+        input.span4(name='word', type='text')
+        button.btn(name='submit') Найти
+    .row(name='ext-params')
+      .span3
+        input(name='name', type='text', placeholder='Слово')
+      .span3
+        input(name='first', type='text', placeholder='Начальная форма')
+      .span3
+        input(name='lit', type='text', placeholder='Литературное соответсвие')
+      .span2
+      .row
+        button.btn.bth-primary(name='submit') Найти
+  .row
+    ul(name='result-list')
+script(src='/javascripts/search/index.js')     
 
