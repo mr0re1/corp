@@ -1,49 +1,54 @@
 window.CorpParser = (function () { 
 
+
 var parseDescription = function(str) {
-	return {};
- //var descriptions = str.split('|');
- //var d_arr = [];
- //for (var d_ind in descriptions) {
- // var d_s = descriptions[d_ind];
- // var d = {};
- // props = d_s.split(/=|,/);
- // for (var p_ind in props) {
- //   var prop = props[p_ind].chomp();
- //   if (! prop) continue;
- //   var is_spec = false;
- //   if(/(.+)\((.+)\)/.test(prop)) { // 'first' and 'lit'
- //     d.first = RegExp.$1;
- //     d.lit = RegExp.$2;
- //     is_spec = true;
- //   }
- //   for (var prop_name in dp) {
- //     if (prop in dp[prop_name]) {
- //       if (d[prop_name] !== undefined) console.error('REWRITE PROPERTY "%s" in description "%s"', prop_name, d_s);
- //       d[prop_name] = dp[prop_name][prop];
- //       is_spec = true;
- //     }
- //   }
- //   if (! is_spec) {
- //     console.error('CAN\'T SPECIFICATE PROPERTY "%s" in description "%s"', prop, d_s);
- //   }
- // }
- // d_arr.push(d);
- //}
- //if (d_arr.length) {
- // if (d_arr.length == 1) return d_arr[0]; // Single description
- // else return d_arr; //Multi description
- //}
- //return undefined; // Empty or invalid description
+ var descriptions = str.split('|');
+ var d_arr = [];
+ for (var d_ind in descriptions) {
+  var d_s = descriptions[d_ind];
+  var d = {};
+  props = d_s.split(/=|,/);
+  for (var p_ind in props) {
+    var prop = props[p_ind].replace(/(\n|\r)+$/, '');
+    if (! prop) continue;
+    if(/(.+)\((.+)\)/.test(prop)) { // 'first' and 'lit'
+      d.first = RegExp.$1;
+      d.lit = RegExp.$2;
+    } else { d[prop] = true }
+  }
+  d_arr.push(d);
+ }
+
+ return d_arr; 
 }
 
 var constructLexem = function(word, descr) {
-  var lex = {
-    _type: 'lex',
-    name: word,
-    descr: parseDescription(descr)
+  var d = parseDescription(descr);
+  if (d.length == 1) {
+    d[0].name = word;
+    return {
+      _type: 'lex'
+    , name: word
+    , descr: d[0] 
     };
-  return lex;
+  } else {
+    var l_set = {
+      _type: 'lex-set'
+    , name: word
+    , lexems: []
+    };
+    for (var i = 0; i < d.length; ++i) {
+      d[i].name = word;
+      l_set.lexems.push(
+        {
+          _type: 'lex'
+        , name: word
+        , descr: d[i]
+        }
+      );
+    }
+    return l_set;
+  }
 }
 
 var theme_re = /^#(\d+)/;
@@ -92,24 +97,22 @@ var parse = function(str) {
         content.push(current_plain_text);
         current_plain_text = "";
       }
-      if (item._type == 'theme') {
+      if (item[0]._type == 'theme') {
         if (current_theme !== undefined) { // Close theme
-          if (current_theme != item.type) return (new Error("Try to open new theme without closing old at position " + position));
-          item._mark = 'close';
+          item[0]._open = false;
           current_theme = undefined;
         } else { //Open theme
-          item._mark = 'open';
-          current_theme = item.type;
+          item[0]._open = true;
+          current_theme = item[0].type;
         }
       }
-      if (item._type == 'genre') {
+      if (item[0]._type == 'genre') {
         if (current_genre !== undefined) { // Close genre
-          if (current_genre != item.type) return (new Error("Try to open new genre without closing old at position " + position));
-          item._mark = 'close';
+          item[0]._open = false;
           current_genre = undefined;
         } else { // Open genre
-          item._mark = 'open';
-          current_genre = item.type;
+          item[0]._open = true;
+          current_genre = item[0].type;
         }
       }
       content.push(item[0]);

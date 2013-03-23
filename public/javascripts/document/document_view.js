@@ -7,28 +7,6 @@ var $page = page.getEl()
   , $cont = $page.find('[name=content]')
   , $desc = $page.find();
 
-var get_tmpl = function(item) {
-  if ('string' == typeof item) return Templates['doc/plain-text'];
-  return Templates['doc/' + item._type];
-};
-
-var showLexemeDescription = function() {
-  var $this = $(this);
-  
-  var d = JSON.parse($this.attr('descr'));
-  if (! $.isArray(d)) d = [d];
-  for (var ind in d) { prepDescr(d[ind]); }
-  
-  var pos = $this.position();
-  pos.top += $this.height();
-  
-  $descr
-    .empty()
-    .append(Templates['doc/description']({word: $this.text(), descr: d} ))
-    .offset(pos)
-    .show();
-}
-$cont.on('click', '.lex', showLexemeDescription)
 
 
 function getAudioByPath(path) { 
@@ -56,33 +34,65 @@ $cont.on('audio_pause', function(e, p){
     .removeClass('icon-play icon-pause')
     .addClass('icon-play');
 });
+var get_tmpl = function(item) {
+  if ('string' == typeof item) return Templates['doc/plain-text'];
+  return Templates['doc/' + item._type];
+};
 
-page.drow = function(doc) {
-  $name.text(doc.name);
+var LexemeRegExp = /l(.*){(.*)}/;
+var drowLexem = function(it){
+  if (typeof it != 'string' || it.charAt(0) != 'l') return;
+  var v = LexemeRegExp.exec(it);
+  return Templates['doc/lex']({name: v[1], descr: v[2]});
+};
+var drowPlainText = function(it){
+  if (typeof it != 'string' || it.charAt(0) != 'p') return;
+  var str = it.slice(1);
+  str = str.replace('\n', '<br>');
+  str = str.replace('\s', '&nbsp');
+  return Templates['doc/plain-text']({item: str});
+};
+var drowTheme = function(it){
+  if (it._type == 'theme') return Templates['doc/theme'](it);
+};
+var drowGenre = function(it){
+  if (it._type == 'genre') return Templates['doc/genre'](it);
+};
+var drowQues = function(it){
+  if (it._type == 'ques') return Templates['doc/ques'](it);
+}
 
-  var cl = doc.content.length
+var drowAudio = function(it){
+  if (it._type == 'audio' && page.doc.audio[it.id]) {
+    return Templates['doc/audio'](page.doc.audio[it.id]);
+  }   
+};
+var drowLexemSet = function(it){
+  if (it._type != 'lex-set') return;
+  var descr = [];
+  for (var li in it.lexems) {
+    var l = LexemeRegExp.exec(it.lexems[li]);
+    if(l[2]) descr.push(l[2]);
+  }
+  return Templates['doc/lex']({name: it.name, descr: descr.join('|')});
+};
+
+page.drow = function() {
+  $name.text(page.doc.name);
+  console.log(page.doc);
+  var cl = page.doc.content.length
     , item
     , tmpl;
   for (var i = 0; i < cl; ++i) {
-    item = doc.content[i];
-    item.nom = i;
-    tmpl = get_tmpl(item);
-    if (tmpl) {
-      if (Object === item.constructor) {
-        if (item._type == 'audio'){
-          if (doc.audio[item.id]) 
-            $cont.append(tmpl(doc.audio[item.id]))
-        }
-        else $cont.append(tmpl(item)) 
-      } 
-      else {
-        var str = item;
-        str = str.replace('\n', '<br>');
-        str = str.replace('\s', '&nbsp');
-        
-        $cont.append(tmpl({item: str, nom: i}));
-      }
-    }
+    it = page.doc.content[i];
+    var html = drowLexem(it) 
+             || drowPlainText(it) 
+             || drowTheme(it) 
+             || drowGenre(it)
+             || drowQues(it)
+             || drowAudio(it)
+             || drowLexemSet(it);
+    if (html) $cont.append(html);
   }
 
   $cont.find('audio').bind({
@@ -94,7 +104,10 @@ page.drow = function(doc) {
 router.route('/document/view/:id', function(id){
   api.get('document/'+id, {}, function(err, doc){
     if (err) alert("Some error: ", err)
-    else page.drow(doc);
+    else {
+      page.doc = doc;
+      page.drow()
+    };
   });
 
   $cont.empty(); 

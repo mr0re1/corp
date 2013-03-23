@@ -31,8 +31,8 @@ app.file_manager = new FileManager({
 });
 app.user_controller = new UserController( new CollectionProvider(db, 'users'));
 app.lexeme_controller = new LexemeController(new CollectionProvider(db, 'lex'));
-app.document_controller = new DocumentController(new CollectionProvider(db, 'docs'), app.lexeme_controller, app.file_manager);
-app.person_controller = new PersonController(new CollectionProvider(db, 'persons'), app.file_manager);
+app.document_controller = new DocumentController(new CollectionProvider(db, 'doc'), app.lexeme_controller, app.file_manager);
+app.person_controller = new PersonController(new CollectionProvider(db, 'person'), app.file_manager);
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);

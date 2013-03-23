@@ -28,9 +28,7 @@ prot.getDocs = function(opt, fn) {
 };
 
 prot.getDoc = function(id, fn) {
-	this.cp.getById(id, function(doc){
-    this.decompressDocument(doc, fn);
-  }.cf(fn, this));
+	this.cp.getById(id, fn);   //this.decompressDocument(doc, fn);
 };
 
 prot.loadDocument = function(form, fn) {
@@ -41,85 +39,99 @@ prot.loadDocument = function(form, fn) {
     author: form.user,
     content: form.content,
     audio: form.audio,
-  };
-  this.compressDocument(doc, function(c_doc) {
-      this.addDocument(c_doc, fn)
-    }.cf(fn, this)
-  );
-}
-
-prot.removeDocument = function(id, fn) {
-	this.cp.removeByID(id,fn);
+  }
+  
+  async.mapSeries(doc.content, this.compressItem.bind(this), function(err, result){
+    if(err) fn(err)
+    else {
+      doc.content = result;
+      this.addDocument(doc, fn)
+    }
+  }.bind(this));
 }
 
 prot.publicDocument = function(id, fn) {
 	var _id = this.cp.IDfromString(id);
 	this.cp.update({'_id': _id}, {'$set': {'public': true}}, {'safe': true}, fn);
-}
+};
 
 prot.unpublicDocument = function(id, fn) {
 	var _id = this.cp.IDfromString(id);
 	this.cp.update({'_id': _id}, {'$set': {'public': false}}, {'safe': true}, fn);
-}
+};
 
 prot.addDocument = function(doc, fn) {
-  var addE = function(ins) {
-    var doc_id = ins[0]._id;
-    fn(null, doc_id);
+  var self = this;
 
-    var contl = doc.content.length;
-    for (var pos = 0; pos < contl; ++pos) {
-      var item = doc.content[pos];
-      if (typeof item != 'string') continue;
-      if (item.charAt(0) != 'l') continue;
-      this.lc.addEntry(item.slice(1), doc_id, pos, function(){}.cf());
+  this.cp.insert(doc, function(err, rec){
+    var doc_id = rec[0]._id;
+
+    var cl = doc.content.length
+      , le = [];
+    
+    //prepare array [hash, position]
+    for (var p = 0; p < cl; ++p) {
+      var item = doc.content[p]
+      if (typeof item == 'string' && item.charAt(0) == 'l') //Is lexeme
+        le.push([item.slice(1), p]);
+      else if (item._type == 'lex-set') 
+        for (var i = 0; i < item.lexems; i++){
+          var l = item.lexems[i];
+          if (typeof l == 'string' && l.charAt(0) == 'l')
+            le.push([l.slice(1), p]);
+        }
     }
-  }
-  this.cp.insert(doc, addE.cf(fn, this)); 
-}
+  
+    async.eachSeries(
+      le
+    , function(i, cb){ self.lc.addEntry(i[0], doc_id, i[1], cb) }
+    , function(err){ fn(err, doc_id) });
+  }); 
+};
 
-prot.compressDocument = function(doc, fn) {
-  var compr_cont = []
-    , that = this;
-
-  var compressQueue = function() {
-    if (! doc.content.length) {
-      doc.content = compr_cont.reverse();
-      return fn(null, doc); };
-
-    that.compressItem( 
-      doc.content.pop(), 
-      function(item) {
-        compr_cont.push(item);
-        compressQueue();
-      }.cf(fn));
-  };
-  compressQueue();
-}
 
 prot.compressItem = function(item, fn) {
-  var addL = function(hash) {fn(null, 'l' + hash)};
-  if (typeof item == 'string') return fn(null, 'p' + item);
-  if (item._type == 'lex') return this.lc.prepareLexeme(item, addL.cf(fn));
+  var self = this;
+  if (typeof item == 'string') 
+    return fn(null, 'p' + item);
+  if (item._type == 'lex') 
+    return self.lc.prepareLexeme(item, function (err, hash) {
+      if (err) fn(err)
+      else fn(null, 'l' + hash);
+    });
+  if (item._type == 'lex-set'){
+    async.mapSeries(item.lexems, self.compressItem.bind(self), function(err, cl){
+      if (err) fn(err)
+      else 
+        fn(null, {
+          _type : 'lex-set'
+        , name: item.name
+        , lexems: cl
+        }); 
+    });
+    return;
+  }
+    
   fn (null, item);
-}
+};
 
-prot.decompressDocument = function(doc, fn) {
-  async.map(doc.content, this.decompressItem.bind(this), function(content) {
-    doc.content = content;
-    fn(null, doc);
-  }.cf(fn, this));
-}
-
-prot.decompressItem = function(item, fn) {
-  if ('string' != typeof item) return fn(null, item);
-  var fstCh = item.charAt(0)
-    , tail = item.slice(1);
-  if (fstCh == 'p') return fn(null, tail);
-  if (fstCh == 'l') { return this.lc.getLexeme(tail, fn) }
-  
-  fn(new Error("undefined item: " + item));
-}
+//TODO: Remove decompressDocument method
+//prot.decompressDocument = function(doc, fn) {
+//  async.map(doc.content, this.decompressItem.bind(this), function(content) {
+//    doc.content = content;
+//    fn(null, doc);
+//  }.cf(fn, this));
+//};
+//TODO: Remove decompressItem method
+//prot.decompressItem = function(item, fn) {
+//  if ('string' != typeof item) return fn(null, item);
+//  var fstCh = item.charAt(0)
+//    , tail = item.slice(1);
+//  if (fstCh == 'p') return fn(null, tail);
+//  if (fstCh == 'l') { return this.lc.getLexeme(tail, fn) }
+//  
+//  fn(new Error("undefined item: " + item));
+//};
 
 prot.search = function(params, fn) {
   var res = []
@@ -154,7 +166,8 @@ prot.getDocFragment = function(docId, pos, fn) {
     while (left > 0 && 'string' === typeof cont[left]) left--;
     while (right < conl && 'string' === typeof cont[right]) right++;
     doc.content = doc.content.slice(left, right);
-    this.decompressDocument(doc, fn);
+    fn(null, doc);
+    //this.decompressDocument(doc, fn);
   }.cf(fn, this))  
 }
 

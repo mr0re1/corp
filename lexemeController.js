@@ -74,9 +74,11 @@ proto.prepareLexeme = function(lexeme, fn) {
     lex = lexeme;
     lex._id = hash;
     lex.in = {};
-    this.cp.insert(lex, {safe: true}, processInsert.cf(fn, this));
+    this.cp.insert(lex, {safe: true}, function(err, rec) {
+      if (err) fn(err) 
+      else fn(null, rec[0]._id)
+    });
   };
-  var processInsert = function(rec) { fn(null, rec[0]._id); };
   this.getLexeme(hash, check.cf(fn, this));
 };
 
@@ -120,27 +122,17 @@ proto.addEntry = function(hash, doc_id, pos, fn) {
  * @return {String} The hash.
  */
 proto.calcHash =  function(lex) {
-  if (Array.isArray(lex.descr))
-    lex.descr = this._sortSet(lex.descr);
-  return JSON.stringify(lex);
-}
+  var hash = lex.name + '{' + lex.descr.first + '(' + lex.descr.lit + ')';
+  var keys = [];
+  for (var k in lex.descr) 
+    if (k != 'first' && k != 'lit' && k != 'name') keys.push(k);
 
-/**
- * Sort the set in lexigraphical order
- *
- * @param {Array} set The set.
- * @return {Array} Sorted set.
- */
-proto._sortSet = function(set) {
-  var len = set.length
-    , tmp = new Array(len)
-    , res = new Array(len);
-  for (var i = 0; i < len; ++i) 
-    tmp[i] = [i, JSON.stringify(set[i])];
-  tmp = tmp.sort(function(a, b){ return a[1] > b[1] });
-  for (var i = 0; i < len; ++i)
-    res[i] = set[tmp[i][0]];
-  return res;
+  if (keys.length) 
+    hash += '=' + keys.join(',');
+
+  hash += '}';
+
+  return hash; 
 }
 
 exports.LexemeController = LexemeController;
