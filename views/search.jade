@@ -13,18 +13,134 @@
         | Введите слово, которое хотите найти
       .input-append
         input.span4(name='word', type='text')
-        button.btn(name='submit') Найти
+        button.btn.btn-primary(name='submit') Найти
     .row(name='ext-params')
-      .span3
-        input(name='name', type='text', placeholder='Слово')
-      .span3
-        input(name='first', type='text', placeholder='Начальная форма')
-      .span3
-        input(name='lit', type='text', placeholder='Литературное соответсвие')
-      .span2
       .row
-        button.btn.bth-primary(name='submit') Найти
+        .span3
+          input(name='name', type='text', placeholder='Слово')
+        .span3
+          input(name='first', type='text', placeholder='Начальная форма')
+        .span3
+          input(name='lit', type='text', placeholder='Литературное соответсвие')
+        .span3
+          button.btn.btn-primary(name='submit') Найти
+      .row
+        .span3
+          h5 Часть речи
+          label.checkbox Сущ
+            input(type='checkbox',value='S')
+          label.checkbox Прил
+            input(type='checkbox',value='A')
+          label.checkbox Мест-Прил
+            input(type='checkbox',value='A-NUM') 
+          label.checkbox Числ
+            input(type='checkbox',value='NUM') 
+          label.checkbox Глаг
+            input(type='checkbox',value='V') 
+          label.checkbox Нареч
+            input(type='checkbox',value='ADV') 
+          label.checkbox Предикатив
+            input(type='checkbox',value='PRAEDIC') 
+          label.checkbox Вводное слово
+            input(type='checkbox',value='PARENTH') 
+          label.checkbox Пред
+            input(type='checkbox',value='PR') 
+          label.checkbox Союз
+            input(type='checkbox',value='CONGJ') 
+          label.checkbox Частица
+            input(type='checkbox',value='PART') 
+          label.checkbox Междом
+            input(type='checkbox',value='INTJ') 
+          label.checkbox Идеоматическое выражение
+            input(type='checkbox',value='IDIOM')
+
+        .span3
+          h5 Род
+          label.checkbox муж
+            input(type='checkbox',value='муж')
+          label.checkbox жен
+            input(type='checkbox',value='жен')
+          label.checkbox сред
+            input(type='checkbox',value='сред')
+
+          h5 Число
+          label.checkbox ед
+            input(type='checkbox',value='ед')
+          label.checkbox мн
+            input(type='checkbox',value='мн')
+
+          h5 Падеж
+          label.checkbox им
+            input(type='checkbox',value='им')
+          label.checkbox род
+            input(type='checkbox',value='род')
+          label.checkbox дат
+            input(type='checkbox',value='дат')
+          label.checkbox вин
+            input(type='checkbox',value='вин')
+          label.checkbox твор
+            input(type='checkbox',value='твор')
+          label.checkbox пр
+            input(type='checkbox',value='пр')
+
+        .span3
+          h5 Одушевленность
+          label.checkbox од
+            input(type='checkbox',value='од')
+          label.checkbox неод
+            input(type='checkbox',value='неод')
+
+          h5 Вид
+          label.checkbox сов
+            input(type='checkbox',value='сов')
+          label.checkbox несов
+            input(type='checkbox',value='несов')
+
+          h5 Наклонение
+          label.checkbox изъяв
+            input(type='checkbox',value='изъяв')
+          label.checkbox пов
+            input(type='checkbox',value='пов')
+
+          h5 Время
+          label.checkbox прош
+            input(type='checkbox',value='прош')
+          label.checkbox непрош
+            input(type='checkbox',value='непрош')
+          label.checkbox наст
+            input(type='checkbox',value='наст')
+        
+        .span3
+          h5 Лицо
+          label.checkbox 1-л
+            input(type='checkbox',value='1-л')
+          label.checkbox 2-л
+            input(type='checkbox',value='2-л')
+          label.checkbox 3-л
+            input(type='checkbox',value='3-л')
+        
+          h5 Имя собственное
+          label.checkbox имя
+            input(type='checkbox',value='имя')
+          label.checkbox фамилия
+            input(type='checkbox',value='фам')
+          label.checkbox отчество
+            input(type='checkbox',value='отч')
+          label.checkbox топоним
+            input(type='checkbox',value='топ')
+          label.checkbox микротопоним
+            input(type='checkbox',value='мтоп')
+          label.checkbox прозвище
+            input(type='checkbox',value='прозв')
+          label.checkbox кличка
+            input(type='checkbox',value='клич')
+          label.checkbox другое
+            input(type='checkbox',value='onim')
+          
+
+  hr
   .row
+    h4.invisible(name='zero-result') Ничего не найдено
     ul(name='result-list')
 script(src='/javascripts/search/index.js')     
 

@@ -159,10 +159,13 @@ prot.search = function(params, fn) {
 prot.getDocFragment = function(docId, pos, fn) {
   this.cp.getById(docId, function(doc){
     if (! doc) return fn();
+
     var left = pos
       , right = pos
       , cont = doc.content
       , conl = cont.length;
+    
+    doc.content[pos] = '!' + doc.content[pos];
     while (left > 0 && 'string' === typeof cont[left]) left--;
     while (right < conl && 'string' === typeof cont[right]) right++;
     doc.content = doc.content.slice(left, right);
