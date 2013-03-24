@@ -33,7 +33,7 @@ EntiresCursor.prototype.next = function(fn) {
       this.next(fn);
     }.cf(fn, this));
   
-  if (! this.docList.length) {
+  if (! this.docList.length && ! this.docId) {
      this.lex = null;
      return this.next(fn); }
 
