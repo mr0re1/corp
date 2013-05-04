@@ -8,4 +8,12 @@ module.exports = function(app) {
     '/logout', 
     function(req, res, next){ app.auth.logout(req, res, next); },  
     function(req, res) { res.redirect('back'); } );
+
+  app.all(
+    '/api*',
+    function(req, res, next) {
+      if (! req.user) next(new Error('Invalid user'))
+      else next();
+    }
+  )
 }
