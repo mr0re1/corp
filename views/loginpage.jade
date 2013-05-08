@@ -1,0 +1,36 @@
+doctype 5
+html
+  head
+    meta(http-equiv="Content-Type", content="text/html;charset=utf-8")
+    //CSS 
+    link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
+    link(rel='stylesheet', href='/stylesheets/bootstrap-responsive.css')
+
+    //Shortcut icon
+    link(rel='shortcut icon', href='/images/ico.png')
+    
+    //JavaScript
+    script(src='/javascripts/jquery.js')
+    script(src='/javascripts/bootstrap.js')
+
+
+    body
+      .container
+        .hero-unit
+          h2
+            Только для зарегистрированых пользователей
+          hr
+          form.form-horizontal(method='post', action='/login')
+            .control-group
+              label.control-label Пользователь:
+              .controls
+                input(name='name', type='text')
+            .control-group
+              label.control-label Пароль:
+              .controls
+                input(name='password', type='password')
+            .control-group
+              .controls
+                button.btn(type='submit') Войти
+              
+        
