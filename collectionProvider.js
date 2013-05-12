@@ -9,11 +9,11 @@ var CollectionProvider = function(db, collection_name) {
 
 var prot = CollectionProvider.prototype;
 
-prot.getCollection = function (fn) {
+CollectionProvider.prototype.getCollection = function (fn) {
 	this.db.collection(this.collectionName, fn);
 };
 
-prot.proxyMethod = function (method) {
+var proxyMethod = function (method) {
   return function () {
     var args = Array.prototype.slice.apply(arguments);
     var fn = args[args.length - 1];
@@ -24,28 +24,28 @@ prot.proxyMethod = function (method) {
   };
 };
 
-prot.findOne = prot.proxyMethod('findOne');
-prot.insert = prot.proxyMethod('insert');
-prot.update = prot.proxyMethod('update');
-prot.findAndModify = prot.proxyMethod('findAndModify');
-prot.findCursor = prot.proxyMethod('find');
+CollectionProvider.prototype.findOne = proxyMethod('findOne');
+CollectionProvider.prototype.insert = proxyMethod('insert');
+CollectionProvider.prototype.update = proxyMethod('update');
+CollectionProvider.prototype.findAndModify = proxyMethod('findAndModify');
+CollectionProvider.prototype.findCursor = proxyMethod('find');
 
 
-prot.find = function () {
+CollectionProvider.prototype.find = function () {
   var args = Array.prototype.slice.apply(arguments)
     , fn = args.pop();
   var toArray = function (cursor) { cursor.toArray(fn) };
   args.push(toArray.cf(fn));
   this.findCursor.apply(this, args);
 };
-prot.IDfromString = function (id_str) {
+CollectionProvider.prototype.IDfromString = function (id_str) {
   return this.db.bson_serializer.ObjectID.createFromHexString(id_str);
 };
-prot.getById = function (id, fn) {
+CollectionProvider.prototype.getById = function (id, fn) {
   var _id = this.IDfromString(id);
   this.findOne({'_id': _id}, fn);
 };
-prot.removeByID = function(id, fn){
+CollectionProvider.prototype.removeByID = function(id, fn){
 	var _id = this.IDfromString(id);
 	this.findAndModify({'_id': _id}, {}, {}, {'remove': true}, fn);
 }
