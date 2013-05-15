@@ -16,14 +16,17 @@ var CollectionProvider = require('./collectionProvider').CollectionProvider
 
 
 
-var db = new Db('corp', new Server('localhost', 27017, {auto_reconnect: true}, {}));
+var db = new Db('corp', new Server('localhost', 27017, {auto_reconnect: true, safe:false}, {}));
 var user_controller = new UserController( new CollectionProvider(db, 'users'));
 
 
-user_controller.userAdd(
-  {name: name, pass: pass},
-  function(err, res) {
-    if (err) console.error(err)
-    else console.log(res);
-  }
+db.open(function() {
+	user_controller.userAdd(
+	  {name: name, pass: pass},
+	  function(err, res) {
+	    if (err) console.error(err)
+	    else console.log(res);
+	  }
 )
+});
+
