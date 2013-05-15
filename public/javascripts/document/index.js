@@ -18,7 +18,6 @@
   }
 
   router.route('/document', function(){
-    console.log('!!!!!!!!!!!!');
     api.get('document', {}, function(err, data) {
       if (err) alert("Some error: ", err)
       else page.drow('Последние', data);
@@ -30,7 +29,7 @@
   router.route('/document/user/:user', function(user){
     api.get('document', {author: user}, function(err, data){
       if (err) alert("Some error: ", err)
-      else page.drow('Мои докуметы', data);
+      else page.drow('Мои документы', data);
     });
     page.show();
   });
