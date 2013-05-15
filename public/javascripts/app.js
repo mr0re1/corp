@@ -59,3 +59,12 @@ $(document).ready(function() {
   $(document).trigger('page_show', null);
   router.checkRoutes(History.getState());
 });
+
+
+Date.prototype.format = function(frm) {
+  var dt = this
+    , d = dt.getDate()
+    , m = dt.getMonth() + 1
+    , y = dt.getFullYear();
+  return d + '-' + m + '-' + y;
+}

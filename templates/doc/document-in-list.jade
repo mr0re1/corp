@@ -1,4 +1,7 @@
 li.document
   a(href='#/document/view/#{_id}') #{name}
-  |&nbsp;
+  span (
   a(href='#/document/user/#{author}') #{author}
+  span &nbsp
+  span #{new Date(create_time).format()}
+  span )
