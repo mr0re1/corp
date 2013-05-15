@@ -3,9 +3,8 @@
 var page = new Page('document_add');
 
 router.route('/document/add', function(){
-    page.show();
+  page.show();
 });
-
 
 
 $(document).ready(function(){
@@ -58,8 +57,9 @@ $(document).ready(function(){
 	};
 
   
-
+  var submitButton = $page.find('[name=submit]');
   var submitDocument = function() {
+    submitButton.prop('disabled', true);
 		var res = {};
 		res.name = f.name.val();
 		res.content = doc.content;
@@ -76,12 +76,15 @@ $(document).ready(function(){
       }
 		});
    
-    api.post('document', res,  function(err, res){
-      if (err) console.error(err)
-      else console.log('OK: ', res);
+    api.post('document', res,  function(err, resp){
+      submitButton.prop('disabled', false);
+      if (err) return alert(err); //!!!!!!!!!!!!!!!!!
+      else {
+        router.navigate('/document/view/' + resp._id);         
+      }
     });
   };  
-  $page.find('[name=submit]').click(submitDocument);
+  submitButton.click(submitDocument);
   
   function updateTrackList() {
 		var new_tl = {}

@@ -18,6 +18,7 @@
   }
 
   router.route('/document', function(){
+    console.log('!!!!!!!!!!!!');
     api.get('document', {}, function(err, data) {
       if (err) alert("Some error: ", err)
       else page.drow('Последние', data);

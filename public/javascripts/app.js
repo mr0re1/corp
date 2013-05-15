@@ -56,5 +56,6 @@ window.api = {
 })();
 
 $(document).ready(function() { 
+  $(document).trigger('page_show', null);
   router.checkRoutes(History.getState());
 });
