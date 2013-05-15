@@ -9,7 +9,7 @@ html
     != assets.tag('/styles.css')
 
     //Shortcut icon
-    link(rel='shortcut icon', href='/images/ico.png')
+    link(rel='shortcut icon', href='/img/favicon.ico')
     
     //JavaScript
     script(src='/javascripts/jquery.js')
@@ -23,9 +23,11 @@ html
     script(src='/javascripts/methodedlink.js')
     script(src='/javascripts/fileuploader.js')
 
+    title
+      Диалектологический корпус
+
     script
       app.user = '#{user}'
-      console.log(app);
     != assets.tag('/templates.js')
 
     style
