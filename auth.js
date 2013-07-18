@@ -1,7 +1,7 @@
-var Auth = function(opt) {
+var Auth = function (opt) {
     opt = opt || {};
     this.provider = opt.user_controller;
-} 
+};
 
 Auth.prototype.login = function(req, res, next) {
     var name = req.body.name;

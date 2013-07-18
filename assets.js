@@ -10,7 +10,7 @@ module.exports = function(app) {
       url: '/styles.css',
       filename: __dirname + '/styles/style.less'
     })
-  ]); 
+  ]);
 
   app.use(function(req, res, next) {
     res.locals.assets = assets;

@@ -1,3 +1,4 @@
+/*
 (function(){
 
 var page = new Page('document_add');
@@ -9,8 +10,10 @@ router.route('/document/add', function(){
 
 $(document).ready(function(){
   var $page = page.getEl(); //!!!!!!!!!!!!!!!!!!!!!!!
-  
-  var doc = {
+
+
+
+  /*var doc = {
     audio: {}
   };
   
@@ -31,30 +34,6 @@ $(document).ready(function(){
 		updateTrackList();
 	};
 	f.source.change(onSourceChange);
-
-  function setSource(src){ f.source.text(src).change() };
-
-  //check FileAPI is supported
-	if (window.File && window.FileReader && window.FileList && window.Blob) {
-		$('[name="SourceLoadButton"]').show().change(function(){
-			var file = this.files[0]
-				, reader = new FileReader();
-			
-			reader.onload = function() { setSource(reader.result); };
-			reader.readAsText(file, 'cp1251');
-		});
-	}
-	else {
-		var uploader  = new FileUploader(
-			$('[name="SourceLoadLabel"]').show(),
-			{
-				action: '/returnfilecontent',
-				params: {
-					encoding: 'cp1251'
-				}
-			});
-		uploader.onload = setSource;
-	};
 
   
   var submitButton = $page.find('[name=submit]');
@@ -155,9 +134,25 @@ $(document).ready(function(){
 		if (id) removeTrack(id);
 	});
 
-
-});
-
+   */
 
 
-})();
+  window.DocumentEditPage = function(page_id) {
+    DocumentEditPage.superclass.constructor.apply(this, arguments);
+    var self = this;
+
+    this.sourceEditor = new DocumentContentEditor($('.source-editor-wrap', this.$page))
+
+    router.route('/document/add', function(){
+      self.setDocument(new Document())
+      self.show();
+    });
+
+  };
+  extend(DocumentEditPage, Page);
+
+  DocumentEditPage.prototype.setDocument = function(document) {
+    this.sourceEditor.setDocument(document)
+  }
+
+

@@ -1,8 +1,17 @@
+function extend(Child, Parent) {
+  var F = function() { }
+  F.prototype = Parent.prototype
+  Child.prototype = new F()
+  Child.prototype.constructor = Child
+  Child.superclass = Parent.prototype
+}
+
+
 Page = function(page_id) {
   var self = this;
-
   this.page_id = page_id;
- 
+  this.$page = $('#'+this.page_id);
+
   $(document).on('page_show', function(page_id){
     if (page_id == this.page_id) return;
     self.hide();
@@ -56,7 +65,8 @@ window.api = {
 })();
 
 $(document).ready(function() { 
-  $(document).trigger('page_show', null);
+  new DocumentEditPage('document_edit');
+
   router.checkRoutes(History.getState());
 });
 

@@ -4,31 +4,31 @@ var express = require('express')
   , async = require('async')
   , fs = require('fs')
   , Buffer = require('buffer').Buffer
-  , Iconv = require('iconv').Iconv;
+  , Iconv = require('iconv').Iconv
+  , DBoxConnect = require('dbox-connect');
 
 
-var Db = require('mongodb').Db;
-var Server = require('mongodb').Server;
+var Db = require('mongodb').Db
+  , Server = require('mongodb').Server;
+
+var dbox_connect = new DBoxConnect({
+  "app_key": "ly7wj2y5woa6hxp",
+  "app_secret": "2oez04swwobjik9",
+  "oauth_token": "0s38odstrtwfn46",
+  "oauth_token_secret": "z1gsizc6xik3ppd",
+  "uid": "23698457"
+});
 
 var CollectionProvider = require('./collectionProvider').CollectionProvider
   , UserController = require('./userController').UserController
   , LexemeController = require('./lexemeController').LexemeController
   , DocumentController = require('./documentController').DocumentController
-  , PersonController = require('./personController').PersonController
-  , FileManager = require('./fileManager').FileManager;
+  , PersonController = require('./personController').PersonController;
 
 app = express();
 
 var db = new Db('corp', new Server('localhost', 27017, {auto_reconnect: true}, {}));
 
-app.file_manager = new FileManager({
-  "app_key": "ly7wj2y5woa6hxp",
-  "app_secret": "2oez04swwobjik9",
-  "oauth_token": "0s38odstrtwfn46",
-  "oauth_token_secret": "z1gsizc6xik3ppd",
-  "uid": "23698457",
-  routes: [ '/photo', '/audio' ],
-});
 app.user_controller = new UserController( new CollectionProvider(db, 'users'));
 app.lexeme_controller = new LexemeController(new CollectionProvider(db, 'lex'));
 app.document_controller = new DocumentController(new CollectionProvider(db, 'doc'), app.lexeme_controller, app.file_manager);
@@ -48,13 +48,12 @@ app.configure(function(){
   app.use(express.cookieParser());
   app.use(express.session({ secret: 'secret_string_for_compute_hash' }));
   
-  app.use(app.file_manager.middleware.bind(app.file_manager));
+  app.use(dbox_connect.redirect('/audio'));
+  app.use(dbox_connect.upload({to: '/audio'}));
   app.use(express.static(__dirname + '/public'));
   
   
-
   require('./auth')(app);
-  require('./assets')(app);
  
   app.use(app.router);
   

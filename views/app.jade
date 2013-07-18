@@ -4,31 +4,30 @@ html
     meta(http-equiv="Content-Type", content="text/html;charset=utf-8")
     //CSS 
     link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
-    link(rel='stylesheet', href='/stylesheets/bootstrap-responsive.css')
     link(rel='stylesheet', href='/stylesheets/docview.css')
-    != assets.tag('/styles.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
 
     //Shortcut icon
     link(rel='shortcut icon', href='/img/favicon.ico')
     
     //JavaScript
     script(src='/javascripts/jquery.js')
-    script(src='/javascripts/jade-runtime.js')
     script(src='/javascripts/bootstrap.js')
     script(src='/javascripts/jquery.history.js')
     script(src='/javascripts/Router.js')
+    script(src='/javascripts/emitter.js')
 
     script(src='/javascripts/app.js')
     script(src='/javascripts/auth.js')
-    script(src='/javascripts/methodedlink.js')
-    script(src='/javascripts/fileuploader.js')
+
+    script(src='templates.js')
 
     title
-      Диалектологический корпус
+      Диалектический корпус
 
     script
       app.user = '#{user}'
-    != assets.tag('/templates.js')
+
 
     style
       body {
@@ -38,11 +37,10 @@ html
     
   body
     include navbar
-    .container
-      .row
-        include index
-        include document
-        include search
+
+    include index
+    include document
+    include search
     hr 
 
 

@@ -14,9 +14,15 @@
     "sys": "*",
     "async": "*",
     "functional-node": "*",
-    "asset-rack": "*",
     "dbox": "*",
+    "dbox-connect": "git://github.com/mr0re1/node-dbox-connect.git",
     "request": "*",
-    "iconv": "*"
+    "iconv": "*",
+
+
+    "grunt": "~0.4.0",
+    "grunt-contrib-watch": "*",
+    "grunt-contrib-jade": "~0.7.0",
+    "grunt-contrib-less": "~0.6.1"
   }
 }
