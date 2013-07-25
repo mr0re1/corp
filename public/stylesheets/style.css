@@ -281,7 +281,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 .CodeMirror-measure {
   position: absolute;
   width: 100%;
-  height: 0px;
+  height: 0;
   overflow: hidden;
   visibility: hidden;
 }
@@ -316,6 +316,43 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   .CodeMirror div.CodeMirror-cursor {
     visibility: hidden;
   }
+}
+
+.ComplexAudio .line {
+  width: 100%;
+  height: 20px;
+  position: relative;
+  background-color: #434343;
+}
+.ComplexAudio .line .markers .marker {
+  position: absolute;
+  top: -10px;
+  left: 0;
+  width: 1px;
+  height: 40px;
+  background-color: #a3a3a3;
+}
+.ComplexAudio .line .markers .marker .control,
+.ComplexAudio .line .markers .marker .dragger {
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  background-color: #a3a3a3;
+  position: absolute;
+  left: -5px;
+  cursor: pointer;
+}
+.ComplexAudio .line .markers .marker .control {
+  top: 0;
+}
+.ComplexAudio .line .markers .marker .control.play {
+  background-color: #0f0;
+}
+.ComplexAudio .line .markers .marker .dragger {
+  top: 30px;
+}
+.ComplexAudio .line .markers .marker:hover {
+  background-color: #faa;
 }
 
 .cm-genre {
@@ -358,6 +395,13 @@ body {
 }
 .log-wrap .log-table tbody tr {
   cursor: pointer;
+}
+#document_edit-editor-audio .view {
+  max-height: 800px;
+  overflow-y: scroll;
+}
+#document_edit-editor-audio .complex-audio-wrap .ComplexAudio {
+  margin: 10px 5px 5px 10px;
 }
 
 .doc-edit-preview .theme {

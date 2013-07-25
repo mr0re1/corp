@@ -7,11 +7,17 @@ module.exports = function(grunt) {
       compile: {
         options: {
           client: true,
-          compileDebug: false,
+          compileDebug: false
         },
         files: {
           'public/templates.js': ['templates/**/*.jade']
         }
+      }
+    },
+    concat: {
+      jade: {
+        src: ["node_modules/jade/runtime.min.js","public/templates.js"],
+        dest: "public/templates.js"
       }
     },
     less: {
@@ -27,7 +33,7 @@ module.exports = function(grunt) {
     watch: {
       templates: {
         files: ['templates/**/*.jade'],
-        tasks: ['jade']
+        tasks: ['jade', 'concat:jade']
       },
       css: {
         files: ['styles/*.less'],
@@ -36,12 +42,9 @@ module.exports = function(grunt) {
     }
   });
 
-  // Load the plugin that provides the "uglify" task.
   grunt.loadNpmTasks('grunt-contrib-jade');
   grunt.loadNpmTasks('grunt-contrib-less');
+  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-watch');
-
-  // Default task(s).
-  //grunt.registerTask('test', ['uglify']);
 
 };

@@ -34,33 +34,57 @@
         a(href='#', data-toggle='tab',
         data-target='#document_edit-editor-audio') Аудио
 
+
     .tab-content
       .tab-pane(id='document_edit-editor-common')
         h2 common
       .tab-pane.active(id='document_edit-editor-content')
+        .toolbar
+          .btn-group
+            button.btn.hide(title='загрузить из файла', name='load')
+              i.icon-folder-open
+            button.btn(title='сохранить в файл', name='save')
+              i.icon-hdd
+            button.btn(title='выровнить текст', name='align')
+              i.icon-align-left
         .source-editor-wrap
-        .source-loader-wrap.hide
-          input.hide(name='SourceLoadButton', type='file')
-          button.btn.btn-primary из файла
-        .source-log-wrap.hide
-          ul.log-list
+        .log-wrap.hide
+          table.table.table-condensed.log-table
+            colgroup
+              col.col-ln
+              col.col-ch
+              col.col-ms
+            tbody
+        .hide
+          input(name='source-loader', type='file')
 
-      .tab-pane(id='document_edit-editor-audio')
-        h2 audio
+      .tab-pane.content(id='document_edit-editor-audio')
+        .row
+          .span9.complex-audio-wrap
 
-//script(src='/javascripts/codemirror.js')
-script(src='http://codemirror.net/lib/codemirror.js')
+          .span3
+            button.btn(title='choose file', name='load')
+              i.icon-folder-open
+            audio
+        .row
+          .span9.view
+          .span3
+            ul.markerslist
+        .hide
+          input(name='audio', type='file')
+
+script(src='/javascripts/codemirror.js')
 script(src='/javascripts/document/codemirror_corp.js')
 
 script(src='/javascripts/document/document.js')
+script(src='/javascripts/document/view.js')
 script(src='/javascripts/document/parser.js')
+script(src='/javascripts/document/complexAudio.js')
 
-script(src='/javascripts/document/content_viewer.js')
+script(src='/javascripts/document/sound_editor.js')
 script(src='/javascripts/document/content_editor.js')
 
 script(src='/javascripts/document/index.js')
-
-
 
 script(src='/javascripts/document/edit_page.js')
 

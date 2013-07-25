@@ -1552,7 +1552,6 @@
 
       this.activate($this.parent('li'), $ul)
       this.activate($target, $target.parent(), function () {
-        $this.trigger('shown');
         $this.trigger({
           type: 'shown'
         , relatedTarget: previous
