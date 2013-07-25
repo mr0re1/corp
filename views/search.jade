@@ -69,6 +69,45 @@
           input(type='checkbox',value='ед')
         label.checkbox множественное
           input(type='checkbox',value='мн')
+    .row(name='ext-params')
+      .row
+        .span3
+          input(name='name', type='text', placeholder='Слово')
+        .span3
+          input(name='first', type='text', placeholder='Начальная форма')
+        .span3
+          input(name='lit', type='text', placeholder='Литературное соответствие')
+        .span3
+          button.btn.btn-primary(name='submit') Найти
+      .row
+        .span3
+          h5 Часть речи
+          label.checkbox существительное 
+            input(type='checkbox',value='S')
+          label.checkbox прилагательное
+            input(type='checkbox',value='A')
+          label.checkbox порядковое числительное
+            input(type='checkbox',value='A-NUM') 
+          label.checkbox числительное
+            input(type='checkbox',value='NUM') 
+          label.checkbox глагол
+            input(type='checkbox',value='V') 
+          label.checkbox наречие
+            input(type='checkbox',value='ADV') 
+          label.checkbox предикатив
+            input(type='checkbox',value='PRAEDIC') 
+          label.checkbox вводное слово
+            input(type='checkbox',value='PARENTH') 
+          label.checkbox предлог
+            input(type='checkbox',value='PR') 
+          label.checkbox союз
+            input(type='checkbox',value='CONJ') 
+          label.checkbox частица
+            input(type='checkbox',value='PART') 
+          label.checkbox междометие
+            input(type='checkbox',value='INTJ') 
+          label.checkbox идиоматическое выражение
+            input(type='checkbox',value='IDIOM')
 
         h5 Падеж
         label.checkbox именительный
@@ -102,6 +141,12 @@
           input(type='checkbox',value='изъяв')
         label.checkbox повелительное
           input(type='checkbox',value='пов')
+        .span3
+          h5 Одушевленность
+          label.checkbox одушевленное
+            input(type='checkbox',value='од')
+          label.checkbox неодушевленное
+            input(type='checkbox',value='неод')
 
         h5 Время
         label.checkbox прошедшее
@@ -137,7 +182,41 @@
           input(type='checkbox',value='клич')
         label.checkbox другое
           input(type='checkbox',value='onim')
-          
+          h5 Время
+          label.checkbox прошедшее
+            input(type='checkbox',value='прош')
+          label.checkbox будущее
+            input(type='checkbox',value='буд')
+          label.checkbox настоящее
+            input(type='checkbox',value='наст')
+        
+        .span3
+          h5 Лицо
+          label.checkbox 1-лицо
+            input(type='checkbox',value='1-л')
+          label.checkbox 2-лицо
+            input(type='checkbox',value='2-л')
+          label.checkbox 3-лицо
+            input(type='checkbox',value='3-л')
+        
+          h5 Имя собственное
+          label.checkbox имя
+            input(type='checkbox',value='имя')
+          label.checkbox фамилия
+            input(type='checkbox',value='фам')
+          label.checkbox отчество
+            input(type='checkbox',value='отч')
+          label.checkbox топоним
+            input(type='checkbox',value='топ')
+          label.checkbox микротопоним
+            input(type='checkbox',value='мтоп')
+          label.checkbox прозвище
+            input(type='checkbox',value='прозв')
+          label.checkbox кличка
+            input(type='checkbox',value='клич')
+          label.checkbox другое
+            input(type='checkbox',value='onim')
+
 
   hr
   .row
