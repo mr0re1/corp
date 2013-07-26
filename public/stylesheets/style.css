@@ -281,7 +281,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 .CodeMirror-measure {
   position: absolute;
   width: 100%;
-  height: 0;
+  height: 0px;
   overflow: hidden;
   visibility: hidden;
 }
@@ -401,7 +401,7 @@ body {
   overflow-y: scroll;
 }
 #document_edit-editor-audio .complex-audio-wrap .ComplexAudio {
-  margin: 10px 5px 5px 10px;
+  margin: 10px 5px 10px 5px;
 }
 
 .doc-edit-preview .theme {
